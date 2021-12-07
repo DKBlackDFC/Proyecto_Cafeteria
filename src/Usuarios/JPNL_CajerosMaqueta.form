@@ -464,7 +464,7 @@
                     <StringItem index="0" value="SELECCIONAR TIPO"/>
                     <StringItem index="1" value="ADMINISTRADOR"/>
                     <StringItem index="2" value="MODERADOR"/>
-                    <StringItem index="3" value="ESTANDAR"/>
+                    <StringItem index="3" value="CAJERO"/>
                   </StringArray>
                 </Property>
                 <Property name="colorMaterial" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">

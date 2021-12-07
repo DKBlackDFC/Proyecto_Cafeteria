@@ -13,4 +13,6 @@ import Base_De_Datos.Construcciones.Usuarios;
  */
 public interface DAOUsuarios extends CRUD<Usuarios>{
     public boolean Verificar_Usuario(Usuarios usuario) throws Exception;
+    public Usuarios Extraer_Datos(String codigo) throws Exception;
+    public boolean Existe_Usuario(Usuarios usuario) throws Exception;
 }
