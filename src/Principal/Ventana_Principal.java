@@ -378,8 +378,8 @@ public class Ventana_Principal extends javax.swing.JFrame {
         }else{
             Alerta_Error EA = new Alerta_Error(new JFrame(), true);
             EA.JLBL_Mensaje1.setText("No cuentas con los permisos suficientes");
-            EA.JLBL_Mensaje3.setText("para acceder a éste apartado.");
-            EA.JLBL_Mensaje2.setText("");
+            EA.JLBL_Mensaje2.setText("para acceder a éste apartado.");
+            EA.JLBL_Mensaje3.setText("");
             EA.setVisible(true);
         }
     }//GEN-LAST:event_JBTN_AlmacenActionPerformed
@@ -398,8 +398,8 @@ public class Ventana_Principal extends javax.swing.JFrame {
         }else{
             Alerta_Error EA = new Alerta_Error(new JFrame(), true);
             EA.JLBL_Mensaje1.setText("No cuentas con los permisos suficientes");
-            EA.JLBL_Mensaje3.setText("para acceder a éste apartado.");
-            EA.JLBL_Mensaje2.setText("");
+            EA.JLBL_Mensaje2.setText("para acceder a éste apartado.");
+            EA.JLBL_Mensaje3.setText("");
             EA.setVisible(true);
         }
     }//GEN-LAST:event_JBTN_CajerosActionPerformed
