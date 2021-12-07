@@ -5,6 +5,10 @@
  */
 package Principal;
 
+import Almacen.JPNL_AlmacenMaqueta;
+import Configuracion.JPNL_ConfiguracionMaqueta;
+import Ventas.JPNL_VentasMaqueta;
+
 
 /**
  *
@@ -12,9 +16,17 @@ package Principal;
  */
 public class Ventana_Principal extends javax.swing.JFrame {
     
+    private boolean minimizar = false;
+    
+    private JPNL_AlmacenMaqueta JPNL_Almacen;
+    private JPNL_VentasMaqueta JPNL_Ventas;
+    private JPNL_ConfiguracionMaqueta JPNL_Configuracion;
+    
     public Ventana_Principal() {
         initComponents();
-                
+        
+        thi
+        
         this.JLBL_Panel.setText("C O N F I G U R A C I O N");
     }
     /**
@@ -32,6 +44,7 @@ public class Ventana_Principal extends javax.swing.JFrame {
         JBTN_Almacen = new rojeru_san.RSButtonRiple();
         JBTN_Cajeros = new rojeru_san.RSButtonRiple();
         JBTN_Configuracion = new rojeru_san.RSButtonRiple();
+        rSPanelImage1 = new rojerusan.RSPanelImage();
         JPNL_Subfondo = new javax.swing.JPanel();
         JPNL_Cabecera = new javax.swing.JPanel();
         JBTN_Cerrar = new rojeru_san.rsbutton.RSButtonRoundEffect();
@@ -102,6 +115,19 @@ public class Ventana_Principal extends javax.swing.JFrame {
             }
         });
 
+        rSPanelImage1.setImagen(new javax.swing.ImageIcon(getClass().getResource("/IMG/Principal/Logo_Banner.png"))); // NOI18N
+
+        javax.swing.GroupLayout rSPanelImage1Layout = new javax.swing.GroupLayout(rSPanelImage1);
+        rSPanelImage1.setLayout(rSPanelImage1Layout);
+        rSPanelImage1Layout.setHorizontalGroup(
+            rSPanelImage1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 145, Short.MAX_VALUE)
+        );
+        rSPanelImage1Layout.setVerticalGroup(
+            rSPanelImage1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 145, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout JPNL_MenuLayout = new javax.swing.GroupLayout(JPNL_Menu);
         JPNL_Menu.setLayout(JPNL_MenuLayout);
         JPNL_MenuLayout.setHorizontalGroup(
@@ -110,11 +136,17 @@ public class Ventana_Principal extends javax.swing.JFrame {
             .addComponent(JBTN_Almacen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(JBTN_Cajeros, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(JBTN_Configuracion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(JPNL_MenuLayout.createSequentialGroup()
+                .addGap(38, 38, 38)
+                .addComponent(rSPanelImage1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         JPNL_MenuLayout.setVerticalGroup(
             JPNL_MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(JPNL_MenuLayout.createSequentialGroup()
-                .addGap(174, 174, 174)
+                .addGap(18, 18, 18)
+                .addComponent(rSPanelImage1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(JBTN_Ventas, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(JBTN_Almacen, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -332,5 +364,6 @@ public class Ventana_Principal extends javax.swing.JFrame {
     private rojerusan.RSPanelsSlider JPNL_Slider;
     private javax.swing.JPanel JPNL_Subfondo;
     private javax.swing.JPanel JPN_DUsuario;
+    private rojerusan.RSPanelImage rSPanelImage1;
     // End of variables declaration//GEN-END:variables
 }
