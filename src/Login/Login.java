@@ -12,7 +12,6 @@ import Base_De_Datos.interfaces.DAOUsuarios;
 import Principal.Ventana_Principal;
 import Utilidades.Cifrado;
 import java.awt.Color;
-import javax.swing.JFrame;
 
 /**
  *
@@ -59,7 +58,7 @@ public class Login extends javax.swing.JFrame {
                         public void run() {
                             JBTN_Cerrar.setEnabled(false);
                             JBTN_Cerrar.setBackground(Color.WHITE);
-                        JBTN_Ingresar.setEnabled(false); 
+                            JBTN_Ingresar.setEnabled(false); 
                             JTF_Usuario.setEditable(false);
                             JTF_Usuario.setBackground(Color.WHITE);
                             JPF_Contrasena.setEditable(false);
@@ -75,10 +74,24 @@ public class Login extends javax.swing.JFrame {
                         }
                     }).start();
                 }else{
-                    
+                    Limpiar_Campos();
+            
+                    Alerta_Error AE = new Alerta_Error(this,true);
+                    AE.JLBL_Mensaje1.setText("El Usuario y/o Contraseña");
+                    AE.JLBL_Mensaje2.setText("son incorrectos.");
+                    AE.JLBL_Mensaje3.setText("");
+                    AE.setVisible(true);
                 } 
             }catch(Exception ex){
+                Limpiar_Campos();
+            
+                Alerta_Error AE = new Alerta_Error(this,true);
+                AE.JLBL_Mensaje1.setText("Error al establecer conexión");
+                AE.JLBL_Mensaje2.setText("con la Base de Datos.");
+                AE.JLBL_Mensaje3.setText("");
+                AE.setVisible(true);
                 
+                System.out.println(ex.getMessage());
             }
         }else{
             Limpiar_Campos();
@@ -181,6 +194,11 @@ public class Login extends javax.swing.JFrame {
 
         JBTN_Ingresar.setBackground(new java.awt.Color(24, 23, 37));
         JBTN_Ingresar.setText("INGRESAR");
+        JBTN_Ingresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBTN_IngresarActionPerformed(evt);
+            }
+        });
 
         JBTN_Cerrar.setBackground(new java.awt.Color(255, 255, 255));
         JBTN_Cerrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Login/Icono_Cerrar.png"))); // NOI18N
@@ -290,6 +308,10 @@ public class Login extends javax.swing.JFrame {
     private void JBTN_CerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_CerrarActionPerformed
         System.exit(0);
     }//GEN-LAST:event_JBTN_CerrarActionPerformed
+
+    private void JBTN_IngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_IngresarActionPerformed
+        Ingresar();
+    }//GEN-LAST:event_JBTN_IngresarActionPerformed
 
     /**
      * @param args the command line arguments

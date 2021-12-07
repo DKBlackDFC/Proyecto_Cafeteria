@@ -15,7 +15,7 @@ public class Usuarios {
     private String usuario;
     private String contrasena;
     private String telefono;
-    private int tipo;
+    private String tipo;
 
     public int getId() {
         return id;
@@ -57,11 +57,11 @@ public class Usuarios {
         this.telefono = telefono;
     }
 
-    public int getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(int tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 

@@ -22,7 +22,9 @@ public class DAOUsuariosImpI extends Conexion implements DAOUsuarios {
     @Override
     public boolean Verificar_Usuario(Usuarios usuario) throws Exception {
         try{
-            String SQL = "SELECT id_usu, nom_usu, cont_usu, tipo_usu FROM usuarios WHERE usu_usu = ?";
+            String SQL = "SELECT U.id_usu, U.nom_usu, U.usu_usu, U.cont_usu, U.tel_usu, T.nom_rol "
+                        + "FROM usuarios U INNER JOIN cat_roles T ON U.tipo_usu = T.id_rol "
+                        + "WHERE U.usu_usu = ?";
             
             this.Conexion();
             PreparedStatement ps = this.conexion.prepareStatement(SQL);
@@ -33,7 +35,7 @@ public class DAOUsuariosImpI extends Conexion implements DAOUsuarios {
                 if(usuario.getContrasena().equals(res.getString("cont_usu"))){
                     usuario.setId(Integer.parseInt(res.getString("id_usu")));
                     usuario.setNombre(res.getString("nom_usu"));
-                    usuario.setTipo(Integer.parseInt(res.getString("tipo_usu"))); 
+                    usuario.setTipo(res.getString("nom_rol")); 
                     
                     res.close();
                     ps.close();
@@ -67,12 +69,14 @@ public class DAOUsuariosImpI extends Conexion implements DAOUsuarios {
             this.Conexion();
             
             if(cadena.equals("")){
-                SQL = "SELECT * FROM usuarios";
+                SQL = "SELECT U.id_usu, U.nom_usu, U.usu_usu, U.cont_usu, U.tel_usu, T.nom_rol "
+                        + "FROM usuarios U INNER JOIN cat_roles T ON U.tipo_usu = T.id_rol";
             }else{
-                SQL = "SELECT * FROM usuarios WHERE ("
-                        + "id_usu LIKE '"+ cadena +"%' OR "
-                        + "nom_usu LIKE '"+ cadena +"%' OR "
-                        + "usu_usu LIKE '"+ cadena +"%')";
+                SQL = "SELECT U.id_usu, U.nom_usu, U.usu_usu, U.cont_usu, U.tel_usu, T.nom_rol "
+                        + "FROM usuarios U INNER JOIN cat_roles T ON U.tipo_usu = T.id_rol"
+                        + "WHERE (U.id_usu LIKE '"+ cadena +"%' OR "
+                               + "U.nom_usu LIKE '"+ cadena +"%' OR "
+                               + "U.usu_usu LIKE '"+ cadena +"%')";
             }
             
             PreparedStatement ps = this.conexion.prepareStatement(SQL);
@@ -84,7 +88,7 @@ public class DAOUsuariosImpI extends Conexion implements DAOUsuarios {
                 usuario.setNombre(res.getString("nom_usu"));
                 usuario.setUsuario(res.getString("usu_usu"));
                 usuario.setTelefono(res.getString("tel_usu"));
-                usuario.setTipo(Integer.parseInt(res.getString("tipo_usu")));
+                usuario.setTipo(res.getString("nom_tipo"));
                 
                 datosUsuarios.add(usuario);
             }
