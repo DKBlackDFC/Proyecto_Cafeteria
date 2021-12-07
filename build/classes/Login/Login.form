@@ -134,7 +134,7 @@
                               <Component id="jLabel2" alignment="0" max="32767" attributes="0"/>
                               <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                  <Component id="rSButtonRoundEffect1" min="-2" pref="32" max="-2" attributes="0"/>
+                                  <Component id="JBTN_Cerrar" min="-2" pref="32" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
@@ -159,7 +159,7 @@
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="90" max="-2" attributes="0"/>
-                          <Component id="rSButtonFlat_new1" min="-2" max="-2" attributes="0"/>
+                          <Component id="JBTN_Ingresar" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -168,7 +168,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="rSButtonRoundEffect1" min="-2" pref="32" max="-2" attributes="0"/>
+                          <Component id="JBTN_Cerrar" min="-2" pref="32" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
@@ -186,7 +186,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="JLBL_Copyright2" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
-                          <Component id="rSButtonFlat_new1" min="-2" max="-2" attributes="0"/>
+                          <Component id="JBTN_Ingresar" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -261,15 +261,18 @@
                     </Property>
                   </Properties>
                 </Component>
-                <Component class="newscomponents.RSButtonFlat_new" name="rSButtonFlat_new1">
+                <Component class="newscomponents.RSButtonFlat_new" name="JBTN_Ingresar">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="25" green="17" red="18" type="rgb"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="INGRESAR"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBTN_IngresarActionPerformed"/>
+                  </Events>
                 </Component>
-                <Component class="rojeru_san.rsbutton.RSButtonRoundEffect" name="rSButtonRoundEffect1">
+                <Component class="rojeru_san.rsbutton.RSButtonRoundEffect" name="JBTN_Cerrar">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
@@ -281,6 +284,9 @@
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBTN_CerrarActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="JLBL_Copyright1">
                   <Properties>

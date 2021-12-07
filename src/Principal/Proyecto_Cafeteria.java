@@ -5,6 +5,11 @@
  */
 package Principal;
 
+import Login.Login;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.UnsupportedLookAndFeelException;
+
 /**
  *
  * @author DIEGO
@@ -15,7 +20,14 @@ public class Proyecto_Cafeteria {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        String s = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+        try {
+            javax.swing.UIManager.setLookAndFeel(s);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(Proyecto_Cafeteria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        new Login().setVisible(true);
     }
     
 }

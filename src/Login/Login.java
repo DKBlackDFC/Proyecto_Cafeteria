@@ -5,6 +5,14 @@
  */
 package Login;
 
+import Alertas.Alerta_Error;
+import Base_De_Datos.Construcciones.Usuarios;
+import Base_De_Datos.Implementaciones.DAOUsuariosImpI;
+import Base_De_Datos.interfaces.DAOUsuarios;
+import Principal.Ventana_Principal;
+import Utilidades.Cifrado;
+import java.awt.Color;
+
 /**
  *
  * @author DIEGO
@@ -17,11 +25,85 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         initComponents();
         
+        this.setTitle("PUNTO DE VENTA CAFETERÍA - LOGIN");
+        
         rsutilities.RSUtilities.setCentrarVentana(this);
         rsutilities.RSUtilities.setMoverVentana(this);
         rsutilities.RSUtilities.setOpaqueVentana(this, false);
+        rsutilities.RSUtilities.setIconoVentana(this, "/IMG/Login/Icono.jpg");
     }
-
+    
+    private void Limpiar_Campos(){
+        this.JTF_Usuario.requestFocus();
+        this.JTF_Usuario.setNextFocusableComponent(this.JPF_Contrasena);
+        
+        this.JTF_Usuario.setText("");
+        this.JPF_Contrasena.setText("");
+    }
+    
+    private void Ingresar(){
+        if(!this.JPF_Contrasena.getText().isEmpty() || !this.JTF_Usuario.getText().isEmpty()){
+            DAOUsuarios metodosUsuarios= new DAOUsuariosImpI();
+            Usuarios usuario = new Usuarios();
+            
+            String contrasena_cifrada = Cifrado.SHA1(JPF_Contrasena.getText());
+            
+            usuario.setUsuario(JTF_Usuario.getText());
+            usuario.setContrasena(contrasena_cifrada);
+            
+            try{
+                if(metodosUsuarios.Verificar_Usuario(usuario)){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            JBTN_Cerrar.setEnabled(false);
+                            JBTN_Cerrar.setBackground(Color.WHITE);
+                            JBTN_Ingresar.setEnabled(false); 
+                            JTF_Usuario.setEditable(false);
+                            JTF_Usuario.setBackground(Color.WHITE);
+                            JPF_Contrasena.setEditable(false);
+                            JPF_Contrasena.setBackground(Color.WHITE);
+                            
+                            Ventana_Principal VP = new Ventana_Principal();
+                            VP.JLBL_AsignarNombre.setText(usuario.getNombre());
+                            VP.JLBL_AsignarTipo.setText("" + usuario.getTipo());
+                            VP.JLBL_Id.setText("" + usuario.getId());
+                            dispose();
+                            
+                            VP.setVisible(true);
+                        }
+                    }).start();
+                }else{
+                    Limpiar_Campos();
+            
+                    Alerta_Error AE = new Alerta_Error(this,true);
+                    AE.JLBL_Mensaje1.setText("El Usuario y/o Contraseña");
+                    AE.JLBL_Mensaje2.setText("son incorrectos.");
+                    AE.JLBL_Mensaje3.setText("");
+                    AE.setVisible(true);
+                } 
+            }catch(Exception ex){
+                Limpiar_Campos();
+            
+                Alerta_Error AE = new Alerta_Error(this,true);
+                AE.JLBL_Mensaje1.setText("Error al establecer conexión");
+                AE.JLBL_Mensaje2.setText("con la Base de Datos.");
+                AE.JLBL_Mensaje3.setText("");
+                AE.setVisible(true);
+                
+                System.out.println(ex.getMessage());
+            }
+        }else{
+            Limpiar_Campos();
+            
+            Alerta_Error AE = new Alerta_Error(this,true);
+            AE.JLBL_Mensaje1.setText("Ambos campos son requeridos.");
+            AE.JLBL_Mensaje2.setText("");
+            AE.JLBL_Mensaje3.setText("");
+            AE.setVisible(true);
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -41,8 +123,8 @@ public class Login extends javax.swing.JFrame {
         JTF_Usuario = new RSMaterialComponent.RSTextFieldMaterial();
         rSLabelImage2 = new rojerusan.RSLabelImage();
         rSLabelImage3 = new rojerusan.RSLabelImage();
-        rSButtonFlat_new1 = new newscomponents.RSButtonFlat_new();
-        rSButtonRoundEffect1 = new rojeru_san.rsbutton.RSButtonRoundEffect();
+        JBTN_Ingresar = new newscomponents.RSButtonFlat_new();
+        JBTN_Cerrar = new rojeru_san.rsbutton.RSButtonRoundEffect();
         JLBL_Copyright1 = new javax.swing.JLabel();
         JLBL_Copyright2 = new javax.swing.JLabel();
 
@@ -110,12 +192,22 @@ public class Login extends javax.swing.JFrame {
 
         rSLabelImage3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Login/Icono_Usuario.png"))); // NOI18N
 
-        rSButtonFlat_new1.setBackground(new java.awt.Color(24, 23, 37));
-        rSButtonFlat_new1.setText("INGRESAR");
+        JBTN_Ingresar.setBackground(new java.awt.Color(24, 23, 37));
+        JBTN_Ingresar.setText("INGRESAR");
+        JBTN_Ingresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBTN_IngresarActionPerformed(evt);
+            }
+        });
 
-        rSButtonRoundEffect1.setBackground(new java.awt.Color(255, 255, 255));
-        rSButtonRoundEffect1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Login/Icono_Cerrar.png"))); // NOI18N
-        rSButtonRoundEffect1.setColorHover(new java.awt.Color(255, 255, 255));
+        JBTN_Cerrar.setBackground(new java.awt.Color(255, 255, 255));
+        JBTN_Cerrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Login/Icono_Cerrar.png"))); // NOI18N
+        JBTN_Cerrar.setColorHover(new java.awt.Color(255, 255, 255));
+        JBTN_Cerrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBTN_CerrarActionPerformed(evt);
+            }
+        });
 
         JLBL_Copyright1.setFont(new java.awt.Font("Roboto", 1, 14)); // NOI18N
         JLBL_Copyright1.setForeground(new java.awt.Color(24, 23, 37));
@@ -138,7 +230,7 @@ public class Login extends javax.swing.JFrame {
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(rSButtonRoundEffect1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(JBTN_Cerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(rSLabelImage2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -155,14 +247,14 @@ public class Login extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(90, 90, 90)
-                .addComponent(rSButtonFlat_new1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(JBTN_Ingresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(rSButtonRoundEffect1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(JBTN_Cerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addGap(82, 82, 82)
@@ -178,7 +270,7 @@ public class Login extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(JLBL_Copyright2)
                 .addGap(43, 43, 43)
-                .addComponent(rSButtonFlat_new1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(JBTN_Ingresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(34, 34, 34))
         );
 
@@ -212,6 +304,14 @@ public class Login extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void JBTN_CerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_CerrarActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_JBTN_CerrarActionPerformed
+
+    private void JBTN_IngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_IngresarActionPerformed
+        Ingresar();
+    }//GEN-LAST:event_JBTN_IngresarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -249,6 +349,8 @@ public class Login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private rojeru_san.rsbutton.RSButtonRoundEffect JBTN_Cerrar;
+    private newscomponents.RSButtonFlat_new JBTN_Ingresar;
     public static javax.swing.JLabel JLBL_Copyright1;
     public static javax.swing.JLabel JLBL_Copyright2;
     private RSMaterialComponent.RSPasswordMaterial JPF_Contrasena;
@@ -256,8 +358,6 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private newscomponents.RSButtonFlat_new rSButtonFlat_new1;
-    private rojeru_san.rsbutton.RSButtonRoundEffect rSButtonRoundEffect1;
     private rojerusan.RSLabelImage rSLabelImage2;
     private rojerusan.RSLabelImage rSLabelImage3;
     private rojerusan.RSPanelImage rSPanelImage1;
