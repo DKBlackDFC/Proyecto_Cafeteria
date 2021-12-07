@@ -382,21 +382,11 @@ public class JPNL_CajerosMaqueta extends javax.swing.JPanel {
         JTFL_Nombre.setColorMaterial(new java.awt.Color(66, 63, 102));
         JTFL_Nombre.setPlaceholder("Nombre Completo");
         JTFL_Nombre.setSelectionColor(new java.awt.Color(66, 63, 102));
-        JTFL_Nombre.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_NombreKeyReleased(evt);
-            }
-        });
 
         JTFL_Usuario.setForeground(new java.awt.Color(24, 23, 37));
         JTFL_Usuario.setColorMaterial(new java.awt.Color(66, 63, 102));
         JTFL_Usuario.setPlaceholder("Nombre de Usuario");
         JTFL_Usuario.setSelectionColor(new java.awt.Color(66, 63, 102));
-        JTFL_Usuario.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_UsuarioKeyReleased(evt);
-            }
-        });
 
         JCBX_Tipo.setForeground(new java.awt.Color(24, 23, 37));
         JCBX_Tipo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SELECCIONAR TIPO", "ADMINISTRADOR", "MODERADOR", "CAJERO" }));
@@ -436,11 +426,6 @@ public class JPNL_CajerosMaqueta extends javax.swing.JPanel {
         JTFL_Telefono.setPlaceholder("Teléfono");
         JTFL_Telefono.setSelectionColor(new java.awt.Color(66, 63, 102));
         JTFL_Telefono.setSoloNumeros(true);
-        JTFL_Telefono.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_TelefonoKeyReleased(evt);
-            }
-        });
 
         rSLabelImage5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Usuarios/Icono_Telefono.png"))); // NOI18N
 
@@ -598,18 +583,6 @@ public class JPNL_CajerosMaqueta extends javax.swing.JPanel {
     private void JTFL_BuscarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_BuscarKeyReleased
         Agregar_Datos_Tabla(this.JTFL_Buscar.getText());
     }//GEN-LAST:event_JTFL_BuscarKeyReleased
-
-    private void JTFL_NombreKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_NombreKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTFL_NombreKeyReleased
-
-    private void JTFL_UsuarioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_UsuarioKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTFL_UsuarioKeyReleased
-
-    private void JTFL_TelefonoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_TelefonoKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTFL_TelefonoKeyReleased
 
     private void JBTN_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_EliminarActionPerformed
         if(Verificar_Permisos()){
@@ -791,6 +764,7 @@ public class JPNL_CajerosMaqueta extends javax.swing.JPanel {
                     AE.JLBL_Mensaje1.setText("No cuenta con permisos para registrar usuarios");
                     AE.JLBL_Mensaje2.setText("de este nivel.");
                     AE.JLBL_Mensaje3.setText("");
+                    AE.setVisible(true);
                 }
             }else{
                 if(Verificar_Telefono(JTFL_Telefono.getText())){
@@ -798,7 +772,7 @@ public class JPNL_CajerosMaqueta extends javax.swing.JPanel {
                     Usuarios modelo = new Usuarios();
                     
                     try{
-                        modelo.setUsuario(usuario);
+                        modelo.setUsuario(this.JTFL_Usuario.getText());
                         modelo.setNombre("");
                         
                         if(this.JTFL_Usuario.getText().equals(usuario)){
@@ -862,7 +836,7 @@ public class JPNL_CajerosMaqueta extends javax.swing.JPanel {
                                 }
                             }else{
                                 Alerta_Error AE = new Alerta_Error(new JFrame(),true);
-                                AE.JLBL_Mensaje1.setText("El usuario que intenta registrar ya");
+                                AE.JLBL_Mensaje1.setText("El usuario que intenta ingresar ya");
                                 AE.JLBL_Mensaje2.setText("existe.");
                                 AE.JLBL_Mensaje3.setText("");
                                 AE.setVisible(true);

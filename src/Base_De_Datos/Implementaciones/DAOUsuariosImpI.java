@@ -88,7 +88,7 @@ public class DAOUsuariosImpI extends Conexion implements DAOUsuarios {
                 usuario.setNombre(res.getString("nom_usu"));
                 usuario.setUsuario(res.getString("usu_usu"));
                 usuario.setTelefono(res.getString("tel_usu"));
-                usuario.setTipo(res.getString("nom_tipo"));
+                usuario.setTipo(res.getString("nom_rol"));
                 
                 datosUsuarios.add(usuario);
             }
@@ -108,7 +108,7 @@ public class DAOUsuariosImpI extends Conexion implements DAOUsuarios {
     @Override
     public void Registrar(Usuarios usuario) throws Exception {
         try{
-            String SQL = "INSERT INTO usuarios nom_usu, usu_usu, cont_usu, tel_usu, tipo_usu "
+            String SQL = "INSERT INTO usuarios (nom_usu, usu_usu, cont_usu, tel_usu, tipo_usu) "
                        + "VALUES(?,?,?,?,?)";
             
             this.Conexion();
@@ -116,9 +116,9 @@ public class DAOUsuariosImpI extends Conexion implements DAOUsuarios {
             
             ps.setString(1, usuario.getNombre());
             ps.setString(2, usuario.getUsuario());
-            ps.setString(3, usuario.getTelefono());
-            ps.setString(4, usuario.getContrasena());
-            ps.setString(5, usuario.getTipo());
+            ps.setString(3, usuario.getContrasena());
+            ps.setString(4, usuario.getTelefono());
+            ps.setInt(5, Integer.parseInt(usuario.getTipo()));
             
             ps.executeUpdate();
             
@@ -132,13 +132,54 @@ public class DAOUsuariosImpI extends Conexion implements DAOUsuarios {
     }
 
     @Override
-    public void Modificar(Usuarios t) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void Modificar(Usuarios usuario) throws Exception {
+        try{
+            String SQL = "UPDATE usuarios SET "
+                              + "nom_usu = ?, "
+                              + "usu_usu = ?, "
+                              + "tel_usu = ?, "
+                              + "cont_usu = ?, "
+                              + "tipo_usu = ? "
+                              + "WHERE id_usu = ?";
+            
+            this.Conexion();
+            
+            PreparedStatement ps = this.conexion.prepareStatement(SQL);
+            ps.setString(1, usuario.getNombre());
+            ps.setString(2, usuario.getUsuario());
+            ps.setString(3, usuario.getTelefono());
+            ps.setString(4, usuario.getContrasena());
+            ps.setString(5, usuario.getTipo());
+            ps.setInt(6, usuario.getId());
+            
+            ps.executeUpdate();
+            
+            ps.close();
+        }catch(Exception ex){
+            throw ex;
+        }finally{
+            this.Cerrar_Conexion();
+        }
     }
 
     @Override
-    public void Eliminar(Usuarios t) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void Eliminar(Usuarios usuario) throws Exception {
+        try{
+            String SQL = "DELETE FROM usuarios WHERE id_usu = ?";
+            
+            this.Conexion();
+            
+            PreparedStatement ps = this.conexion.prepareStatement(SQL);
+            ps.setInt(1, usuario.getId());
+            ps.executeUpdate();
+            
+            ps.close();
+            
+        }catch(Exception ex){
+            throw ex;
+        }finally{
+            this.Cerrar_Conexion();
+        }
     }
 
     @Override
@@ -175,12 +216,11 @@ public class DAOUsuariosImpI extends Conexion implements DAOUsuarios {
     @Override
     public boolean Existe_Usuario(Usuarios usuario) throws Exception {
         try{
-            String SQL = "SELECT usu_usu FROM usuarios WHERE nom_usu = ? OR usu_usu = ?";
+            String SQL = "SELECT usu_usu FROM usuarios WHERE usu_usu = ?";
             
             this.Conexion();
             PreparedStatement ps = this.conexion.prepareStatement(SQL);
-            ps.setString(1, usuario.getNombre());
-            ps.setString(2, usuario.getUsuario());
+            ps.setString(1, usuario.getUsuario());
             ResultSet res = ps.executeQuery();
             
             if(res.next()){
