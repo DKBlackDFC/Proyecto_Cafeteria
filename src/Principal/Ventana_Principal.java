@@ -5,9 +5,15 @@
  */
 package Principal;
 
+import Alertas.Alerta_Advertencia;
+import Alertas.Alerta_Error;
 import Almacen.JPNL_AlmacenMaqueta;
 import Configuracion.JPNL_ConfiguracionMaqueta;
+import Usuarios.JPNL_CajerosMaqueta;
 import Ventas.JPNL_VentasMaqueta;
+import static java.awt.Frame.ICONIFIED;
+import javax.swing.JFrame;
+import rojerusan.RSPanelsSlider;
 
 
 /**
@@ -18,17 +24,44 @@ public class Ventana_Principal extends javax.swing.JFrame {
     
     private boolean minimizar = false;
     
-    private JPNL_AlmacenMaqueta JPNL_Almacen;
     private JPNL_VentasMaqueta JPNL_Ventas;
+    private JPNL_AlmacenMaqueta JPNL_Almacen;
+    private JPNL_CajerosMaqueta JPNL_Cajeros;
     private JPNL_ConfiguracionMaqueta JPNL_Configuracion;
     
     public Ventana_Principal() {
         initComponents();
         
-        thi
+        Inicializar_Paneles();
         
-        this.JLBL_Panel.setText("C O N F I G U R A C I O N");
+        this.setTitle("BUFFET CANINO - Punto de Venta");
+        
+        //rsutilities.RSUtilities.setIconoVentana(this, "/IMG/Logo/Logo_Buffet_Canino_Icono.jpg");
+        
+        this.setExtendedState(MAXIMIZED_BOTH);
+       
+        this.JLBL_Panel.setText("V E N T A S".toUpperCase());
+        this.JBTN_Ventas.setSelected(true);
     }
+    
+    private void Inicializar_Paneles(){
+        JPNL_Ventas = new JPNL_VentasMaqueta();
+        JPNL_Almacen = new JPNL_AlmacenMaqueta();
+        JPNL_Cajeros = new JPNL_CajerosMaqueta();
+        JPNL_Configuracion = new JPNL_ConfiguracionMaqueta();
+        
+        JPNL_Ventas.setName("JPNL_VentasMaqueta");
+        JPNL_Almacen.setName("JPNL_AlmacenMaqueta");
+        JPNL_Cajeros.setName("JPNL_CajerosMaqueta");
+        JPNL_Configuracion.setName("JPNL_ConfiguracionMaqueta");
+        
+        this.JPNL_Slider.add(JPNL_Ventas);
+        this.JPNL_Slider.add(JPNL_Almacen);
+        this.JPNL_Slider.add(JPNL_Cajeros);
+        this.JPNL_Slider.add(JPNL_Configuracion);
+    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -45,6 +78,7 @@ public class Ventana_Principal extends javax.swing.JFrame {
         JBTN_Cajeros = new rojeru_san.RSButtonRiple();
         JBTN_Configuracion = new rojeru_san.RSButtonRiple();
         rSPanelImage1 = new rojerusan.RSPanelImage();
+        JBTN_CerrarSesion = new rojeru_san.RSButtonRiple();
         JPNL_Subfondo = new javax.swing.JPanel();
         JPNL_Cabecera = new javax.swing.JPanel();
         JBTN_Cerrar = new rojeru_san.rsbutton.RSButtonRoundEffect();
@@ -128,6 +162,17 @@ public class Ventana_Principal extends javax.swing.JFrame {
             .addGap(0, 145, Short.MAX_VALUE)
         );
 
+        JBTN_CerrarSesion.setBackground(new java.awt.Color(34, 41, 50));
+        JBTN_CerrarSesion.setText("CERRAR SESIÓN");
+        JBTN_CerrarSesion.setColorHover(new java.awt.Color(54, 63, 73));
+        JBTN_CerrarSesion.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
+        JBTN_CerrarSesion.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        JBTN_CerrarSesion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBTN_CerrarSesionActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout JPNL_MenuLayout = new javax.swing.GroupLayout(JPNL_Menu);
         JPNL_Menu.setLayout(JPNL_MenuLayout);
         JPNL_MenuLayout.setHorizontalGroup(
@@ -140,6 +185,7 @@ public class Ventana_Principal extends javax.swing.JFrame {
                 .addGap(38, 38, 38)
                 .addComponent(rSPanelImage1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(JBTN_CerrarSesion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         JPNL_MenuLayout.setVerticalGroup(
             JPNL_MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -154,7 +200,9 @@ public class Ventana_Principal extends javax.swing.JFrame {
                 .addComponent(JBTN_Cajeros, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(JBTN_Configuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(333, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 240, Short.MAX_VALUE)
+                .addComponent(JBTN_CerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         JPNL_Subfondo.setBackground(new java.awt.Color(255, 255, 255));
@@ -164,6 +212,11 @@ public class Ventana_Principal extends javax.swing.JFrame {
         JBTN_Cerrar.setBackground(new java.awt.Color(255, 255, 255));
         JBTN_Cerrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Login/Icono_Cerrar.png"))); // NOI18N
         JBTN_Cerrar.setColorHover(new java.awt.Color(255, 255, 255));
+        JBTN_Cerrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBTN_CerrarActionPerformed(evt);
+            }
+        });
 
         JLBL_Panel.setFont(new java.awt.Font("Aspergit", 1, 36)); // NOI18N
         JLBL_Panel.setForeground(new java.awt.Color(150, 150, 150));
@@ -173,6 +226,11 @@ public class Ventana_Principal extends javax.swing.JFrame {
         JBTN_Minimizar.setBackground(new java.awt.Color(255, 255, 255));
         JBTN_Minimizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Principal/Icono_Minimizar.png"))); // NOI18N
         JBTN_Minimizar.setColorHover(new java.awt.Color(255, 255, 255));
+        JBTN_Minimizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBTN_MinimizarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout JPNL_CabeceraLayout = new javax.swing.GroupLayout(JPNL_Cabecera);
         JPNL_Cabecera.setLayout(JPNL_CabeceraLayout);
@@ -295,20 +353,92 @@ public class Ventana_Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void JBTN_VentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_VentasActionPerformed
-        
+        if(!this.JBTN_Ventas.isSelected()){
+            this.JBTN_Ventas.setSelected(true);
+            this.JBTN_Almacen.setSelected(false);
+            this.JBTN_Cajeros.setSelected(false);
+            this.JBTN_Configuracion.setSelected(false);
+            
+            JLBL_Panel.setText("V e n t a s".toUpperCase());
+            this.JPNL_Slider.slidPanel(4, JPNL_Ventas, RSPanelsSlider.direct.Right);
+        }
     }//GEN-LAST:event_JBTN_VentasActionPerformed
 
     private void JBTN_AlmacenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_AlmacenActionPerformed
-       
+       if(JLBL_AsignarTipo.getText().equals("ADMINISTRADOR")){
+            if(!this.JBTN_Almacen.isSelected()){
+                this.JBTN_Ventas.setSelected(false);
+                this.JBTN_Almacen.setSelected(true);
+                this.JBTN_Cajeros.setSelected(false);
+                this.JBTN_Configuracion.setSelected(false);
+
+                JLBL_Panel.setText("A l m a c e n".toUpperCase());
+                this.JPNL_Slider.slidPanel(4, JPNL_Almacen, RSPanelsSlider.direct.Right);
+            }
+        }else{
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("No cuentas con los permisos suficientes");
+            EA.JLBL_Mensaje3.setText("para acceder a éste apartado.");
+            EA.JLBL_Mensaje2.setText("");
+            EA.setVisible(true);
+        }
     }//GEN-LAST:event_JBTN_AlmacenActionPerformed
 
     private void JBTN_CajerosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_CajerosActionPerformed
-        
+        if(!JLBL_AsignarTipo.getText().equals("ESTANDAR")){
+            if(!this.JBTN_Cajeros.isSelected()){
+                this.JBTN_Ventas.setSelected(false);
+                this.JBTN_Almacen.setSelected(false);
+                this.JBTN_Cajeros.setSelected(true);
+                this.JBTN_Configuracion.setSelected(false);
+
+                JLBL_Panel.setText("C a j e r o s".toUpperCase());
+                this.JPNL_Slider.slidPanel(4, JPNL_Cajeros, RSPanelsSlider.direct.Right);
+            }
+        }else{
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("No cuentas con los permisos suficientes");
+            EA.JLBL_Mensaje3.setText("para acceder a éste apartado.");
+            EA.JLBL_Mensaje2.setText("");
+            EA.setVisible(true);
+        }
     }//GEN-LAST:event_JBTN_CajerosActionPerformed
 
     private void JBTN_ConfiguracionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_ConfiguracionActionPerformed
-        
+        if(!this.JBTN_Configuracion.isSelected()){
+            this.JBTN_Ventas.setSelected(false);
+            this.JBTN_Almacen.setSelected(false);
+            this.JBTN_Cajeros.setSelected(false);
+            this.JBTN_Configuracion.setSelected(true);
+            
+            JLBL_Panel.setText("C o n f i g u r a c i ó n".toUpperCase());
+            this.JPNL_Slider.slidPanel(4, JPNL_Configuracion, RSPanelsSlider.direct.Right);
+        }
     }//GEN-LAST:event_JBTN_ConfiguracionActionPerformed
+
+    private void JBTN_MinimizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_MinimizarActionPerformed
+        this.setExtendedState(ICONIFIED);
+        if (!minimizar) {
+            minimizar = false;
+            this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        } else {
+            minimizar = true;
+        }
+    }//GEN-LAST:event_JBTN_MinimizarActionPerformed
+
+    private void JBTN_CerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_CerrarActionPerformed
+        Alerta_Advertencia AA = new Alerta_Advertencia(this, true);
+        AA.JLBL_Mensaje1.setText("¿Desea cerrar la Aplicación?");
+        AA.JLBL_Mensaje2.setText("");
+        AA.JLBL_Mensaje3.setText("");
+        AA.accion = "Salir";
+        AA.setVisible(true);
+    }//GEN-LAST:event_JBTN_CerrarActionPerformed
+
+    private void JBTN_CerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_CerrarSesionActionPerformed
+        this.dispose();
+        new Login.Login().setVisible(true);
+    }//GEN-LAST:event_JBTN_CerrarSesionActionPerformed
 
     /**
      * @param args the command line arguments
@@ -349,11 +479,16 @@ public class Ventana_Principal extends javax.swing.JFrame {
     private rojeru_san.RSButtonRiple JBTN_Almacen;
     private rojeru_san.RSButtonRiple JBTN_Cajeros;
     private rojeru_san.rsbutton.RSButtonRoundEffect JBTN_Cerrar;
+    private rojeru_san.RSButtonRiple JBTN_CerrarSesion;
     private rojeru_san.RSButtonRiple JBTN_Configuracion;
     private rojeru_san.rsbutton.RSButtonRoundEffect JBTN_Minimizar;
     private rojeru_san.RSButtonRiple JBTN_Ventas;
     public static javax.swing.JLabel JLBL_AsignarNombre;
     public static javax.swing.JLabel JLBL_AsignarTipo;
+    private rojerusan.RSPanelImage JLBL_IconoConectado;
+    private rojerusan.RSPanelImage JLBL_IconoConectado1;
+    private rojerusan.RSPanelImage JLBL_IconoConectado2;
+    private rojerusan.RSPanelImage JLBL_IconoConectado3;
     public static javax.swing.JLabel JLBL_Id;
     private javax.swing.JLabel JLBL_Nombre;
     private javax.swing.JLabel JLBL_Panel;
