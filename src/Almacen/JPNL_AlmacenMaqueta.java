@@ -5,6 +5,17 @@
  */
 package Almacen;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.KeyStroke;
+import javax.swing.table.DefaultTableModel;
+
 
 /**
  *
@@ -15,6 +26,85 @@ public class JPNL_AlmacenMaqueta extends javax.swing.JPanel {
     
     public JPNL_AlmacenMaqueta() {
         initComponents();
+    }
+    
+    private void addEventKey(){
+
+        KeyStroke f1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false);
+        Action f1Action = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                new RegistrarEditar_Producto(new JFrame(), true).setVisible(true);
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f1, "F1");
+        this.getActionMap().put("F1", f1Action);
+
+        //---------------------------------------------------------------------------
+        KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false);
+        Action f2Action = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                new RegistrarEditar_Categoria(new JFrame(), true).setVisible(true);
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
+        this.getActionMap().put("F2", f2Action);
+
+        //--------------------------------------------------------------------------------
+        KeyStroke f5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false);
+        Action f5Action = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                new Imprimir_Almacen(new JFrame(), true).setVisible(true);
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f5, "F5");
+        this.getActionMap().put("F5", f5Action);
+    }
+    private void Agregar_Datos_Tabla(String cadena){
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Almacen.getModel();
+        DAOAlmacen metodos = new DAOAlmacenImpI();
+        List<Almacen> datosAlmacen = new ArrayList();
+        String[] datos = new String[11];
+        
+        while(modeloTabla.getRowCount() > 0){
+            modeloTabla.removeRow(0);
+        }
+        
+        try{
+            datosAlmacen = metodos.Listar(cadena);
+            
+            for(int i = 0;i < datosAlmacen.size();i++){
+                datos[0] = datosAlmacen.get(i).getCodigo();
+                datos[1] = datosAlmacen.get(i).getCategoria();
+                datos[2] = datosAlmacen.get(i).getDescripcion();
+                datos[3] = String.format("%.2f", datosAlmacen.get(i).getPrecio());
+                datos[4] = String.format("%.2f", datosAlmacen.get(i).getGanancia_menudeo());
+                datos[5] = String.format("%.2f", datosAlmacen.get(i).getGanancia_mayoreo());
+                datos[6] = String.format("%.2f", datosAlmacen.get(i).getPrecio_venta_menudeo());
+                datos[7] = String.format("%.2f", datosAlmacen.get(i).getPrecio_venta_mayoreo());
+                
+                if(datosAlmacen.get(i).getUnidad_venta().equals("Kg")
+                    || datosAlmacen.get(i).getUnidad_venta().equals("Litros")
+                    || datosAlmacen.get(i).getUnidad_venta().equals("Metros")){
+                    
+                    datos[8] = String.format("%.2f", datosAlmacen.get(i).getExistencias());
+                    
+                }else{
+                    datos[8] = String.format("%.0f", datosAlmacen.get(i).getExistencias());
+                }
+                
+                datos[9] = datosAlmacen.get(i).getUnidad_venta();
+                datos[10] = datosAlmacen.get(i).getUbicacion();
+                
+                modeloTabla.addRow(datos);
+            }
+        }catch(Exception ex){
+            ErrorAlert EA = new ErrorAlert(new JFrame(),true);
+            EA.JLBL_Mensaje1.setText("Error al extraer productos de");
+            EA.JLBL_Mensaje2.setText("la base de datos");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+            System.out.println(ex.getMessage());
+        }
     }
     
     @SuppressWarnings("unchecked")
@@ -91,11 +181,11 @@ public class JPNL_AlmacenMaqueta extends javax.swing.JPanel {
 
             },
             new String [] {
-                "CODIGO", "CATEGORIAS", "PRECIO DE COMPRA", "PRECIO DE VENTA", "EXISTENCIAS", "UNiDAD DE VENTA", "FECHA DE CADUCIDAD", "PROVEEDOR"
+                "CODIGO", "DESCRIPCIÓN", "CATEGORÍA", "PRECIO DE COMPRA", "PRECIO DE VENTA", "EXISTENCIAS", "UNIDAD DE VENTA", "FECHA DE CADUCIDAD", "PROVEEDOR"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -258,7 +348,9 @@ public class JPNL_AlmacenMaqueta extends javax.swing.JPanel {
     }//GEN-LAST:event_JBTN_EditarActionPerformed
 
     private void JBTN_NuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_NuevoActionPerformed
-       
+        RegistrarEditar_Producto.Registrar = true;
+        new RegistrarEditar_Producto(new JFrame(),true).setVisible(true);
+        Agregar_Datos_Tabla("");
     }//GEN-LAST:event_JBTN_NuevoActionPerformed
 
     private void JBTN_CategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_CategoriasActionPerformed
