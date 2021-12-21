@@ -5,17 +5,386 @@
  */
 package Ventas;
 
+import Alertas.Alerta_Advertencia;
+import Alertas.Alerta_Error;
+import Alertas.Alerta_Exito;
+import Almacen.JPNL_AlmacenMaqueta;
+import Base_De_Datos.Construcciones.Almacen;
+import Base_De_Datos.Construcciones.Ventas;
+import Base_De_Datos.Implementaciones.DAOAlmacenImpI;
+import Base_De_Datos.Implementaciones.DAOVentasImpI;
+import Base_De_Datos.interfaces.DAOAlmacen;
+import Base_De_Datos.interfaces.DAOVentas;
+import Principal.Ventana_Principal;
+import Reportes.Reportes;
+import Utilidades.Codigo;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.KeyStroke;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author DIEGO
  */
 public class JPNL_CajaMaqueta extends javax.swing.JPanel {
     
+    private static String codigoVenta;
+    
     public JPNL_CajaMaqueta() {
         initComponents();
+     
+        this.JTBL_Ventas.setCursor(new Cursor(12));
+        this.JSB_Ventas.getViewport().setBackground(Color.WHITE);
+
+        this.JPOP_MenuTabla.add(JPNL_Menu);
         
+        addEventKey();
     }
     
+    private void addEventKey(){
+
+        KeyStroke f1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false);
+        Action f1Action = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                Agregar_Sin_Codigo();
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f1, "F1");
+        this.getActionMap().put("F1", f1Action);
+
+        //---------------------------------------------------------------------------
+        KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false);
+        Action f2Action = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                Cobrar_Venta();
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
+        this.getActionMap().put("F2", f2Action);
+
+        //------------------------------------------------------------------------------
+        KeyStroke f3 = KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false);
+        Action f3Action = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                Quitar_Producto();
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f3, "F3");
+        this.getActionMap().put("F3", f3Action);
+
+        //--------------------------------------------------------------------------------
+        KeyStroke f4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false);
+        Action f4Action = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                Cancelar_Venta();
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f4, "F4");
+        this.getActionMap().put("F4", f4Action);
+    }
+    private void Cancelar_Venta(){
+        int filas = this.JTBL_Ventas.getRowCount();
+        
+        if(filas > 0){
+            Alerta_Advertencia WA = new Alerta_Advertencia(new JFrame(), true);
+            WA.JLBL_Mensaje1.setText("Se removerán todos los productos");
+            WA.JLBL_Mensaje2.setText("agregados.");
+            WA.JLBL_Mensaje3.setText("");
+            WA.setVisible(true);
+
+            if(WA.hecho){
+                DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
+                while(modeloTabla.getRowCount() > 0){
+                    modeloTabla.removeRow(0);
+                }
+                
+                this.JLBL_Total.setText("0.00");
+            }
+        }else{
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("No ha agregado ningún producto aún");
+            EA.JLBL_Mensaje2.setText("");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+        }
+    }
+    private void Quitar_Producto(){
+        int filaSeleccionada = this.JTBL_Ventas.getSelectedRow();
+        
+        if(filaSeleccionada != -1){    
+            DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
+            
+            Alerta_Advertencia WA = new Alerta_Advertencia(new JFrame(), true);
+            WA.JLBL_Mensaje1.setText("Se removerá el producto seleccionado.");
+            WA.JLBL_Mensaje2.setText("");
+            WA.JLBL_Mensaje3.setText("");
+            WA.setVisible(true);
+            
+            if(WA.hecho){
+                modeloTabla.removeRow(filaSeleccionada);
+                Calcular_Total();
+            }
+        }else{
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("No ha seleccionado ningún producto.");
+            EA.JLBL_Mensaje2.setText("");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+        }
+    }
+    private void Calcular_Total(){
+        double total = 0;
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
+        
+        for(int i = 0;i < modeloTabla.getRowCount();i++){
+            total += Double.parseDouble(modeloTabla.getValueAt(i,4).toString());
+        }
+        
+        this.JLBL_Total.setText("" + String.format("%.2f", total));
+    }
+    private void Cobrar_Venta(){
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
+        int cantidadFilas = modeloTabla.getRowCount();
+        
+        if(cantidadFilas > 0){
+            
+            Cobrar C = new Cobrar(new JFrame(), true);
+            C.JLBL_Total.setText("$" + this.JLBL_Total.getText());
+            C.totalCobrar = Double.parseDouble(this.JLBL_Total.getText());
+            C.JTFL_PagoCon.setText(this.JLBL_Total.getText());
+            C.JTFL_PagoCon.setSelectionStart(0);
+            C.JTFL_PagoCon.setSelectionEnd(C.JTFL_PagoCon.getText().length());
+            C.JLBL_Cantidad.setText(String.valueOf(cantidadFilas));
+            C.setVisible(true);
+
+            if (C.ventaSinTicket) {
+                Realizar_Venta(C.formaPago, C.efectivo, C.tarjeta);
+            }
+
+            if (C.ventaConTicket) {
+                Realizar_Venta_Ticket(C.pagoCon, C.cambio, String.valueOf(modeloTabla.getRowCount()), String.valueOf(C.totalCobrar), C.formaPago, C.efectivo, C.tarjeta);
+            }
+            
+        }else{
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("No ha agregado ningún producto aún");
+            EA.JLBL_Mensaje2.setText("");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+        }
+    }
+    private void Realizar_Venta(String formaPago, String efectivo, String tarjeta){
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
+        DAOVentas metodosVentas = new DAOVentasImpI();
+        DAOAlmacen metodosAlmacen = new DAOAlmacenImpI();
+        Ventas modeloVenta = new Ventas();
+        Almacen modeloAlmacen = new Almacen();
+        
+        try{
+            String codigo_venta = Codigo.Genrar_Codigo_Venta();
+            codigoVenta = codigo_venta;
+            
+            for(int i = 0;i < modeloTabla.getRowCount();i++){
+                modeloAlmacen = metodosAlmacen.Extraer_Datos(modeloTabla.getValueAt(i,0).toString());
+                
+                modeloVenta.setNumero_venta(codigo_venta);
+                modeloVenta.setProducto(modeloTabla.getValueAt(i,1).toString());
+                modeloVenta.setCantidad(Double.parseDouble(modeloTabla.getValueAt(i,2).toString()));
+                modeloVenta.setPrecio(Double.parseDouble(modeloTabla.getValueAt(i,3).toString()));
+                modeloVenta.setTotal(Double.parseDouble(modeloTabla.getValueAt(i,4).toString()));
+                modeloVenta.setCajero(Ventana_Principal.JLBL_AsignarNombre.getText());
+                modeloVenta.setFecha(this.JLBL_Fecha.getFecha());
+                modeloVenta.setForma_pago(formaPago);
+                
+                metodosVentas.Registrar(modeloVenta);
+            }
+            
+            Actualizar_Almacen();
+            
+            Actualizar_Tabla_Almacen("");
+            //Actualizar_Tabla_UltimasVentas("");
+            
+            Limpiar_Tabla();
+            
+            Alerta_Exito SA = new Alerta_Exito(new JFrame(), true);
+            SA.JLBL_Mensaje1.setText("Venta registrada exitosamente.");
+            SA.JLBL_Mensaje2.setText("");
+            SA.JLBL_Mensaje3.setText("");
+            SA.setVisible(true);
+        }catch(Exception ex){
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("Error al registrar la venta en la");
+            EA.JLBL_Mensaje2.setText("base de datos.");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+            System.out.println(ex.getMessage());
+        }
+    }
+    private void Realizar_Venta_Ticket(String pagoCon, String cambio, String cantidad, String total, String formaPago, String efectivo, String tarjeta){
+        Realizar_Venta(formaPago, efectivo, tarjeta);
+        
+        
+    }
+    private void Limpiar_Tabla(){
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
+        
+        while(modeloTabla.getRowCount() > 0){
+            modeloTabla.removeRow(0);
+        }
+        
+        this.JLBL_Total.setText("0.00");
+    }
+    private void Actualizar_Almacen(){
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
+        DAOAlmacen metodosAlmacen = new DAOAlmacenImpI();
+        Almacen modeloAlmacen = new Almacen();
+        double existencias = 0;
+        
+        try{
+            for(int i = 0;i < modeloTabla.getRowCount();i++){
+                modeloAlmacen = metodosAlmacen.Extraer_Datos(modeloTabla.getValueAt(i,0).toString());
+                existencias = modeloAlmacen.getExistencias();
+                modeloAlmacen.setExistencias(existencias-(Double.parseDouble(modeloTabla.getValueAt(i,2).toString())));
+                
+                metodosAlmacen.Modificar(modeloAlmacen);
+            }
+        }catch(Exception ex){
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("Error al actualizar el inventario.");
+            EA.JLBL_Mensaje2.setText("");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+            System.out.println(ex.getMessage());
+        }
+    }
+    private void Actualizar_Tabla_Almacen(String cadena){
+        DefaultTableModel modeloTabla = (DefaultTableModel) JPNL_AlmacenMaqueta.JTBL_Almacen.getModel();
+        DAOAlmacen metodos = new DAOAlmacenImpI();
+        List<Almacen> datosAlmacen = new ArrayList();
+        String[] datos = new String[9];
+        
+        while(modeloTabla.getRowCount() > 0){
+            modeloTabla.removeRow(0);
+        }
+        
+        try{
+            datosAlmacen = metodos.Listar(cadena);
+            
+            for(int i = 0;i < datosAlmacen.size();i++){
+                datos[0] = String.valueOf(datosAlmacen.get(i).getId());
+                datos[1] = datosAlmacen.get(i).getCategoria();
+                datos[2] = datosAlmacen.get(i).getDescripcion();
+                datos[3] = String.format("%.2f", datosAlmacen.get(i).getPrecioCompra());
+                datos[4] = String.format("%.2f", datosAlmacen.get(i).getPrecioVenta());
+                
+                if(datosAlmacen.get(i).getUnidad_venta().equals("Kg")
+                    || datosAlmacen.get(i).getUnidad_venta().equals("Litros")
+                    || datosAlmacen.get(i).getUnidad_venta().equals("Mililitros")){
+                    
+                    datos[5] = String.format("%.2f", datosAlmacen.get(i).getExistencias());
+                    
+                }else{
+                    datos[5] = String.format("%.0f", datosAlmacen.get(i).getExistencias());
+                }
+                
+                datos[6] = datosAlmacen.get(i).getUnidad_venta();
+                datos[7] = datosAlmacen.get(i).getFechaCaducidad();
+                datos[8] = datosAlmacen.get(i).getProveedor();
+                
+                modeloTabla.addRow(datos);
+            }
+        }catch(Exception ex){
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("Error al extraer productos de");
+            EA.JLBL_Mensaje2.setText("la base de datos");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+            System.out.println(ex.getMessage());
+        }
+    }
+    private void Agregar_Sin_Codigo(){
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
+        
+        Agregar_Producto_Sin_Codigo AP = new Agregar_Producto_Sin_Codigo(new JFrame(), true);
+        
+        for(int i = 0;i < AP.codigos.size();i++){
+            AP.codigos.remove(i);
+        }
+        
+        for(int i = 0;i < modeloTabla.getRowCount();i++){
+            AP.codigos.add(modeloTabla.getValueAt(i,0).toString());
+        }
+        
+        AP.setVisible(true);
+        
+        if(AP.continuar){
+            Almacen modeloAlmacen = new Almacen();
+            String[] datos = new String[5];
+            double cantidad = 0;
+            boolean productoAgregado = false;
+            int fila = 0;
+            
+            modeloAlmacen = AP.producto;
+            cantidad = AP.cantidad;
+            
+            for(int i = 0;i < modeloTabla.getRowCount();i++){
+                if(modeloTabla.getValueAt(i,0).toString().equals(String.valueOf(modeloAlmacen.getId()))){
+                    fila = i;
+                    productoAgregado = true;
+                    break;
+                }
+            }
+            
+            if(productoAgregado){
+                if(Unidad_Venta(modeloAlmacen.getUnidad_venta())){
+                    modeloTabla.setValueAt(String.format("%.2f", Double.parseDouble(modeloTabla.getValueAt(fila,2).toString())+cantidad), fila, 2);
+                    modeloTabla.setValueAt(String.format("%.2f", Calcular_Importe(fila)), fila, 4);
+                    Calcular_Total();
+                }else{
+                    modeloTabla.setValueAt(String.format("%.0f", Double.parseDouble(modeloTabla.getValueAt(fila,2).toString())+cantidad), fila, 2);
+                    modeloTabla.setValueAt(String.format("%.2f", Calcular_Importe(fila)), fila, 4);
+                    Calcular_Total();
+                }
+            }else{
+                datos[0] = String.valueOf(modeloAlmacen.getId());
+                datos[1] = modeloAlmacen.getDescripcion();
+                if(Unidad_Venta(modeloAlmacen.getUnidad_venta())){
+                    datos[2] = String.format("%.2f",cantidad);
+                }else{
+                    datos[2] = String.format("%.0f",cantidad);
+                }
+
+                datos[3] = String.format("%.2f", modeloAlmacen.getPrecioVenta());
+                datos[4] = String.format("%.2f", modeloAlmacen.getPrecioVenta()*cantidad);
+                modeloTabla.addRow(datos);
+                Calcular_Total();
+            }
+        }
+    }
+    private boolean Unidad_Venta(String unidad_venta){
+        if(unidad_venta.equals("Kg") || unidad_venta.equals("Litros") || unidad_venta.equals("Mililitros")){
+            return  true;
+        }else{
+            return false;
+        }
+    }
+    private double Calcular_Importe(int fila){
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
+        double importe = Double.parseDouble(modeloTabla.getValueAt(fila, 2).toString())
+                * Double.parseDouble(modeloTabla.getValueAt(fila, 3).toString());
+        
+        return importe;
+    }
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -172,7 +541,7 @@ public class JPNL_CajaMaqueta extends javax.swing.JPanel {
 
             },
             new String [] {
-                "CODIGO DE BARRAS", "PRODUCTO", "CANTIDAD", "PRECIO DE VENTA", "IMPORTE"
+                "ID", "PRODUCTO", "CANTIDAD", "PRECIO DE VENTA", "IMPORTE"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -312,23 +681,30 @@ public class JPNL_CajaMaqueta extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void JBTN_BuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_BuscarActionPerformed
-        
+        Agregar_Sin_Codigo();
     }//GEN-LAST:event_JBTN_BuscarActionPerformed
 
     private void JBTN_CobrarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_CobrarVentaActionPerformed
-        
+        Cobrar_Venta();
     }//GEN-LAST:event_JBTN_CobrarVentaActionPerformed
 
     private void JBTN_QuitarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_QuitarProductoActionPerformed
-        
+        Quitar_Producto();
     }//GEN-LAST:event_JBTN_QuitarProductoActionPerformed
 
     private void JBTN_CancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_CancelarActionPerformed
-       
+       Cancelar_Venta();
     }//GEN-LAST:event_JBTN_CancelarActionPerformed
 
     private void JTBL_VentasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTBL_VentasMouseClicked
-        
+        int row = JTBL_Ventas.rowAtPoint(evt.getPoint());
+        if ((evt.getModifiers() & InputEvent.BUTTON3_MASK) == InputEvent.BUTTON3_MASK) {
+            this.JTBL_Ventas.setRowSelectionInterval(row, row);
+            //PosicionMouse = evt.getY() / 16;
+            JPOP_MenuTabla.show(evt.getComponent(), evt.getX(), evt.getY());
+        } else {
+            this.JTBL_Ventas.setRowSelectionInterval(row, row);
+        }
     }//GEN-LAST:event_JTBL_VentasMouseClicked
 
     private void JBTN_EditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_EditarActionPerformed
