@@ -230,7 +230,7 @@
                           <Color blue="5c" green="61" red="5d" type="rgb"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="0"/>
-                        <Property name="text" type="java.lang.String" value="&#xbf;Desea imprimir todo el inventario?"/>
+                        <Property name="text" type="java.lang.String" value="&#xbf;Desea exportar todo el inventario?"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel4">

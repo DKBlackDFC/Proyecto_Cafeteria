@@ -52,7 +52,7 @@ public class DAOAlmacenImpI extends Conexion implements DAOAlmacen{
     @Override
     public Almacen Extraer_Datos(String codigo) throws Exception {
         try{
-            String SQL = "SELECT * FROM almacen WHERE codigo LIKE '%"+codigo+"%'";
+            String SQL = "SELECT * FROM productos WHERE id_prod LIKE '%"+codigo+"%'";
             Almacen modelo = new Almacen();
             
             this.Conexion();
@@ -61,18 +61,15 @@ public class DAOAlmacenImpI extends Conexion implements DAOAlmacen{
             ResultSet res = ps.executeQuery();
             
             if(res.next()){
-                modelo.setId(res.getInt("id"));
-                modelo.setCodigo(res.getString("codigo"));
-                modelo.setCategoria(res.getString("categoria"));
-                modelo.setDescripcion(res.getString("descripcion"));
-                modelo.setPrecio(res.getDouble("precio"));
-                modelo.setGanancia_menudeo(res.getDouble("ganancia_menudeo"));
-                modelo.setGanancia_mayoreo(res.getDouble("ganancia_mayoreo"));
-                modelo.setPrecio_venta_menudeo(res.getDouble("precio_venta_menudeo"));
-                modelo.setPrecio_venta_mayoreo(res.getDouble("precio_venta_mayoreo"));
-                modelo.setExistencias(res.getDouble("existencias"));
-                modelo.setUnidad_venta(res.getString("unidad_venta"));
-                modelo.setUbicacion(res.getString("ubicacion"));
+                modelo.setId(res.getInt("id_prod"));
+                modelo.setDescripcion(res.getString("desc_prod"));
+                modelo.setCategoria(res.getString("cat_prod"));
+                modelo.setPrecioCompra(res.getDouble("prec_comp"));
+                modelo.setPrecioVenta(res.getDouble("prec_ven"));
+                modelo.setExistencias(res.getDouble("cant_prod"));
+                modelo.setUnidad_venta(res.getString("uni_prod"));
+                modelo.setFechaCaducidad(res.getDate("fcad_prod").toString());
+                modelo.setProveedor(res.getString("prov_prod"));
             }
             
             res.close();
@@ -90,19 +87,20 @@ public class DAOAlmacenImpI extends Conexion implements DAOAlmacen{
     @Override
     public void Registrar(Almacen producto) throws Exception {
         try{
-            String SQL = "INSERT INTO productos VALUES("+ 0 +",?,?,?,?,?,?,?,?)";
+            String SQL = "INSERT INTO productos (desc_prod,cat_prod,prec_comp,prec_ven,cant_prod,uni_prod,fcad_prod,prov_prod) "
+                       + "VALUES(?,?,?,?,?,?,?,?)";
             
             this.Conexion();
             
             PreparedStatement ps = this.conexion.prepareStatement(SQL);
             ps.setString(1, producto.getDescripcion());
-            ps.setInt(2, Integer.parseInt(producto.getCategoria()));
+            ps.setString(2, producto.getCategoria());
             ps.setDouble(3, producto.getPrecioCompra());
             ps.setDouble(4, producto.getPrecioVenta());
             ps.setDouble(5, producto.getExistencias());
-            ps.setInt(6, Integer.parseInt(producto.getUnidad_venta()));
+            ps.setString(6, producto.getUnidad_venta());
             ps.setDate(7, Date.valueOf(producto.getFechaCaducidad()));
-            ps.setInt(8, Integer.parseInt(producto.getProveedor()));
+            ps.setString(8, producto.getProveedor());
             
             ps.executeUpdate();
             
@@ -125,7 +123,7 @@ public class DAOAlmacenImpI extends Conexion implements DAOAlmacen{
                     + "prec_ven = ?, "
                     + "cant_prod = ?, "
                     + "uni_prod = ?, "
-                    + "fcad_prod = ? "
+                    + "fcad_prod = ?, "
                     + "prov_prod = ? "
                     + "WHERE id_prod = ?";
             
@@ -133,13 +131,13 @@ public class DAOAlmacenImpI extends Conexion implements DAOAlmacen{
             
             PreparedStatement ps = this.conexion.prepareStatement(SQL);
             ps.setString(1, producto.getDescripcion());
-            ps.setInt(2, Integer.parseInt(producto.getCategoria()));
+            ps.setString(2, producto.getCategoria());
             ps.setDouble(3, producto.getPrecioCompra());
             ps.setDouble(4, producto.getPrecioVenta());
             ps.setDouble(5, producto.getExistencias());
-            ps.setInt(6, Integer.parseInt(producto.getUnidad_venta()));
+            ps.setString(6, producto.getUnidad_venta());
             ps.setDate(7, Date.valueOf(producto.getFechaCaducidad()));
-            ps.setInt(8, Integer.parseInt(producto.getProveedor()));
+            ps.setString(8, producto.getProveedor());
             ps.setInt(9, producto.getId());
             ps.executeUpdate();
             
@@ -180,13 +178,13 @@ public class DAOAlmacenImpI extends Conexion implements DAOAlmacen{
             this.Conexion();
             
             if(cadena.equals("")){
-                SQL = "SELECT * FROM almacen";
+                SQL = "SELECT * FROM productos";
             }else{
-                SQL = "SELECT * FROM almacen WHERE ("
-                        + "codigo LIKE '"+ cadena +"%' OR "
-                        + "descripcion LIKE '"+ cadena +"%' OR "
-                        + "categoria LIKE '"+ cadena +"%' OR "
-                        + "ubicacion LIKE '"+ cadena +"%')";
+                SQL = "SELECT * FROM productos WHERE ("
+                        + "id_prod LIKE '"+ cadena +"%' OR "
+                        + "desc_prod LIKE '"+ cadena +"%' OR "
+                        + "cat_prod LIKE '"+ cadena +"%' OR "
+                        + "fcad_prod LIKE '"+ cadena +"%')";
             }
             
             PreparedStatement ps = this.conexion.prepareStatement(SQL);
@@ -195,18 +193,15 @@ public class DAOAlmacenImpI extends Conexion implements DAOAlmacen{
             while(res.next()){
                 Almacen modelo = new Almacen();
                 
-                modelo.setId(res.getInt("id"));
-                modelo.setCodigo(res.getString("codigo"));
-                modelo.setCategoria(res.getString("categoria"));
-                modelo.setDescripcion(res.getString("descripcion"));
-                modelo.setPrecio(res.getDouble("precio"));
-                modelo.setGanancia_menudeo(res.getDouble("ganancia_menudeo"));
-                modelo.setGanancia_mayoreo(res.getDouble("ganancia_mayoreo"));
-                modelo.setPrecio_venta_menudeo(res.getDouble("precio_venta_menudeo"));
-                modelo.setPrecio_venta_mayoreo(res.getDouble("precio_venta_mayoreo"));
-                modelo.setExistencias(res.getDouble("existencias"));
-                modelo.setUnidad_venta(res.getString("unidad_venta"));
-                modelo.setUbicacion(res.getString("ubicacion"));
+                modelo.setId(res.getInt("id_prod"));
+                modelo.setDescripcion(res.getString("desc_prod"));
+                modelo.setCategoria(res.getString("cat_prod"));
+                modelo.setPrecioCompra(res.getDouble("prec_comp"));
+                modelo.setPrecioVenta(res.getDouble("prec_ven"));
+                modelo.setExistencias(res.getDouble("cant_prod"));
+                modelo.setUnidad_venta(res.getString("uni_prod"));
+                modelo.setFechaCaducidad(res.getDate("fcad_prod").toString());
+                modelo.setProveedor(res.getString("prov_prod"));
                 
                 datosAlmacen.add(modelo);
             }

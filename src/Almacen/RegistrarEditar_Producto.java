@@ -11,8 +11,8 @@ import Base_De_Datos.Construcciones.Almacen;
 import Base_De_Datos.Construcciones.Categorias;
 import Base_De_Datos.Implementaciones.DAOAlmacenImpI;
 import Base_De_Datos.Implementaciones.DAOCategoriasImpI;
-import Base_De_Datos.Interfaces.DAOAlmacen;
-import Base_De_Datos.Interfaces.DAOCategorias;
+import Base_De_Datos.interfaces.DAOAlmacen;
+import Base_De_Datos.interfaces.DAOCategorias;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import Utilidades.ToolTip;
 import Utilidades.Verificaciones_Converciones;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
@@ -68,26 +69,18 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
         getRootPane().getActionMap().put("ESCAPE", escapeAction);
     }
     private void Modo_Registrar() {
-        this.JTFL_CodigoBarras.requestFocus();
-        this.JTFL_CodigoBarras.setNextFocusableComponent(this.JTFL_Descripcion);
         this.JTFL_Descripcion.setNextFocusableComponent(this.JTFL_PrecioCompra);
-        this.JTFL_PrecioCompra.setNextFocusableComponent(this.JTFL_GananciaMenudeo);
-        this.JTFL_GananciaMenudeo.setNextFocusableComponent(this.JTFL_GananciaMayoreo);
-        this.JTFL_GananciaMayoreo.setNextFocusableComponent(this.JTFL_PrecioMenudeo);
-        this.JTFL_PrecioMenudeo.setNextFocusableComponent(this.JTFL_PrecioMayoreo);
-        this.JTFL_PrecioMayoreo.setNextFocusableComponent(this.JTFL_Ubicacion);
-        this.JTFL_Ubicacion.setNextFocusableComponent(this.JTFL_Existencias);
+        this.JTFL_PrecioCompra.setNextFocusableComponent(this.JTFL_PrecioVenta);
+        this.JTFL_PrecioVenta.setNextFocusableComponent(this.JTFL_Existencias);
         this.JTFL_Existencias.setNextFocusableComponent(this.JCBX_Unidades);
+        this.JCBX_Unidades.setNextFocusableComponent(this.JDCH_FechaCaducidad);
+        this.JDCH_FechaCaducidad.setNextFocusableComponent(this.JTFL_Proveedor);
 
-        this.JTFL_CodigoBarras.setText("");
         this.JTFL_Descripcion.setText("");
         this.JTFL_PrecioCompra.setText("");
-        this.JTFL_GananciaMenudeo.setText("");
-        this.JTFL_GananciaMayoreo.setText("");
-        this.JTFL_PrecioMenudeo.setText("");
-        this.JTFL_PrecioMayoreo.setText("");
-        this.JTFL_Ubicacion.setText("");
+        this.JTFL_PrecioVenta.setText("");
         this.JTFL_Existencias.setText("");
+        this.JTFL_Proveedor.setText("");
         this.JCBX_Unidades.setSelectedIndex(0);
         this.JCBX_Categoria.setSelectedIndex(0);
         
@@ -102,32 +95,19 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
         this.JBTN_Registrar.setIcon(new ImageIcon(this.getClass().getResource("/IMG/Almacen/Icono_Salvar.png")));
         this.JBTN_Cancelar.setVisible(true);
         
-        this.JTFL_CodigoBarras.setText(modeloGeneral.getCodigo());
         this.JTFL_Descripcion.setText(modeloGeneral.getDescripcion());
-        this.JTFL_PrecioCompra.setText(String.format("%.2f", modeloGeneral.getPrecio()));
-        this.JTFL_GananciaMenudeo.setText(String.format("%.2f", modeloGeneral.getGanancia_menudeo()));
-        this.JTFL_GananciaMayoreo.setText(String.format("%.2f", modeloGeneral.getGanancia_mayoreo()));
-        this.JTFL_PrecioMenudeo.setText(String.format("%.2f", modeloGeneral.getPrecio_venta_menudeo()));
-        this.JTFL_PrecioMayoreo.setText(String.format("%.2f", modeloGeneral.getPrecio_venta_mayoreo()));
-        if(modeloGeneral.getUnidad_venta().equals("Kg") || modeloGeneral.getUnidad_venta().equals("Litros")
-                || modeloGeneral.getUnidad_venta().equals("Metros")){
-            this.JTFL_Existencias.setText(String.format("%.2f", modeloGeneral.getExistencias()));
-        }else{
-            this.JTFL_Existencias.setText(String.format("%.0f", modeloGeneral.getExistencias()));
-        }
-        this.JTFL_Ubicacion.setText(modeloGeneral.getUbicacion());
+        this.JTFL_PrecioCompra.setText(String.format("%.2f", modeloGeneral.getPrecioCompra()));
+        this.JTFL_PrecioVenta.setText(String.format("%.2f", modeloGeneral.getPrecioVenta()));
+        this.JTFL_Existencias.setText(String.format("%.2f", modeloGeneral.getExistencias()));
+        this.JTFL_Proveedor.setText(modeloGeneral.getProveedor());
     }
     private boolean Verificar_Llenado(){
-        if(this.JTFL_CodigoBarras.getText().isEmpty()
-                || this.JTFL_Descripcion.getText().isEmpty()
+        if(this.JTFL_Descripcion.getText().isEmpty()
                 || this.JTFL_PrecioCompra.getText().isEmpty()
-                || this.JTFL_GananciaMenudeo.getText().isEmpty()
-                || this.JTFL_GananciaMayoreo.getText().isEmpty()
-                || this.JTFL_PrecioMenudeo.getText().isEmpty()
-                || this.JTFL_PrecioMayoreo.getText().isEmpty()
-                || this.JTFL_Ubicacion.getText().isEmpty()
+                || this.JTFL_PrecioVenta.getText().isEmpty()
                 || this.JTFL_Existencias.getText().isEmpty()
-                || this.JCBX_Unidades.getSelectedItem().toString().equals("Se venden en")){
+                || this.JCBX_Unidades.getSelectedItem().toString().equals("Se venden en")
+                || this.JTFL_Proveedor.getText().isEmpty()){
 
             return false;
         } else {
@@ -151,7 +131,7 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
             }
             
         }catch(Exception ex){
-            ErrorAlert EA = new ErrorAlert(new JFrame(), true);
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
             EA.JLBL_Mensaje1.setText("Error al obtener las categorías");
             EA.JLBL_Mensaje2.setText("de la base de datos");
             EA.JLBL_Mensaje3.setText("");
@@ -170,30 +150,24 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
         JLBL_Titulo = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         JBTN_Cerrar = new rojeru_san.RSButtonRiple();
-        JTFL_CodigoBarras = new rojeru_san.rsfield.RSTextMaterial();
-        rSLabelImage2 = new rojerusan.RSLabelImage();
         JCBX_Categoria = new RSMaterialComponent.RSComboBoxMaterial();
         rSLabelImage3 = new rojerusan.RSLabelImage();
         rSLabelImage4 = new rojerusan.RSLabelImage();
         JTFL_Descripcion = new rojeru_san.rsfield.RSTextMaterial();
         rSLabelImage5 = new rojerusan.RSLabelImage();
         JTFL_PrecioCompra = new rojeru_san.rsfield.RSTextMaterial();
-        rSLabelImage6 = new rojerusan.RSLabelImage();
-        JTFL_PrecioMayoreo = new rojeru_san.rsfield.RSTextMaterial();
         rSLabelImage7 = new rojerusan.RSLabelImage();
         JTFL_Existencias = new rojeru_san.rsfield.RSTextMaterial();
         JCBX_Unidades = new RSMaterialComponent.RSComboBoxMaterial();
         rSLabelImage8 = new rojerusan.RSLabelImage();
-        JTFL_Ubicacion = new rojeru_san.rsfield.RSTextMaterial();
-        rSLabelImage9 = new rojerusan.RSLabelImage();
         JBTN_Registrar = new rojeru_san.RSButtonRiple();
         JBTN_Cancelar = new rojeru_san.RSButtonRiple();
-        JTFL_GananciaMenudeo = new rojeru_san.rsfield.RSTextMaterial();
-        rSLabelImage10 = new rojerusan.RSLabelImage();
-        rSLabelImage11 = new rojerusan.RSLabelImage();
-        JTFL_GananciaMayoreo = new rojeru_san.rsfield.RSTextMaterial();
-        JTFL_PrecioMenudeo = new rojeru_san.rsfield.RSTextMaterial();
-        rSLabelImage12 = new rojerusan.RSLabelImage();
+        JTFL_PrecioVenta = new rojeru_san.rsfield.RSTextMaterial();
+        rSLabelImage13 = new rojerusan.RSLabelImage();
+        JDCH_FechaCaducidad = new newscomponents.RSDateChooser();
+        jLabel16 = new javax.swing.JLabel();
+        rSLabelImage9 = new rojerusan.RSLabelImage();
+        JTFL_Proveedor = new rojeru_san.rsfield.RSTextMaterial();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
@@ -245,19 +219,6 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
-        JTFL_CodigoBarras.setForeground(new java.awt.Color(24, 23, 37));
-        JTFL_CodigoBarras.setColorMaterial(new java.awt.Color(66, 63, 102));
-        JTFL_CodigoBarras.setPlaceholder("Código de barras");
-        JTFL_CodigoBarras.setSelectionColor(new java.awt.Color(66, 63, 102));
-        JTFL_CodigoBarras.setSoloNumeros(true);
-        JTFL_CodigoBarras.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_CodigoBarrasKeyReleased(evt);
-            }
-        });
-
-        rSLabelImage2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_CodigoBarras.png"))); // NOI18N
-
         JCBX_Categoria.setForeground(new java.awt.Color(24, 23, 37));
         JCBX_Categoria.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SELECCIONAR CATEGORIA", "ADMINISTRADOR", "MODERADOR", "ESTANDAR" }));
         JCBX_Categoria.setColorMaterial(new java.awt.Color(66, 63, 102));
@@ -272,11 +233,6 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
         JTFL_Descripcion.setColorMaterial(new java.awt.Color(66, 63, 102));
         JTFL_Descripcion.setPlaceholder("Descripción");
         JTFL_Descripcion.setSelectionColor(new java.awt.Color(66, 63, 102));
-        JTFL_Descripcion.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_DescripcionKeyReleased(evt);
-            }
-        });
 
         rSLabelImage5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_PrecioCompra.png"))); // NOI18N
 
@@ -285,24 +241,6 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
         JTFL_PrecioCompra.setPlaceholder("Precio de compra");
         JTFL_PrecioCompra.setSelectionColor(new java.awt.Color(66, 63, 102));
         JTFL_PrecioCompra.setSoloNumeros(true);
-        JTFL_PrecioCompra.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_PrecioCompraKeyReleased(evt);
-            }
-        });
-
-        rSLabelImage6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_PrecioVenta.png"))); // NOI18N
-
-        JTFL_PrecioMayoreo.setForeground(new java.awt.Color(24, 23, 37));
-        JTFL_PrecioMayoreo.setColorMaterial(new java.awt.Color(66, 63, 102));
-        JTFL_PrecioMayoreo.setPlaceholder("Precio Mayoreo");
-        JTFL_PrecioMayoreo.setSelectionColor(new java.awt.Color(66, 63, 102));
-        JTFL_PrecioMayoreo.setSoloNumeros(true);
-        JTFL_PrecioMayoreo.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_PrecioMayoreoKeyReleased(evt);
-            }
-        });
 
         rSLabelImage7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_Existencias.png"))); // NOI18N
 
@@ -311,31 +249,14 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
         JTFL_Existencias.setPlaceholder("Existencias");
         JTFL_Existencias.setSelectionColor(new java.awt.Color(66, 63, 102));
         JTFL_Existencias.setSoloNumeros(true);
-        JTFL_Existencias.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_ExistenciasKeyReleased(evt);
-            }
-        });
 
         JCBX_Unidades.setForeground(new java.awt.Color(24, 23, 37));
-        JCBX_Unidades.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Se venden en", "Kg", "Piezas", "Cajas", "Botes", "Litros", "Bultos", "Metros", "Pares" }));
+        JCBX_Unidades.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Se venden en", "Rebanadas", "Tazas", "Mililitros", "Litros", "Piezas", "Kg" }));
         JCBX_Unidades.setColorMaterial(new java.awt.Color(66, 63, 102));
         JCBX_Unidades.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         JCBX_Unidades.setVelMils(300);
 
         rSLabelImage8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_Unidades.png"))); // NOI18N
-
-        JTFL_Ubicacion.setForeground(new java.awt.Color(24, 23, 37));
-        JTFL_Ubicacion.setColorMaterial(new java.awt.Color(66, 63, 102));
-        JTFL_Ubicacion.setPlaceholder("Ubicacion");
-        JTFL_Ubicacion.setSelectionColor(new java.awt.Color(66, 63, 102));
-        JTFL_Ubicacion.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_UbicacionKeyReleased(evt);
-            }
-        });
-
-        rSLabelImage9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_Ubicacion.png"))); // NOI18N
 
         JBTN_Registrar.setBackground(new java.awt.Color(34, 41, 50));
         JBTN_Registrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_Anadir.png"))); // NOI18N
@@ -361,155 +282,114 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
             }
         });
 
-        JTFL_GananciaMenudeo.setForeground(new java.awt.Color(24, 23, 37));
-        JTFL_GananciaMenudeo.setColorMaterial(new java.awt.Color(66, 63, 102));
-        JTFL_GananciaMenudeo.setPlaceholder("Ganancia Menudeo");
-        JTFL_GananciaMenudeo.setSelectionColor(new java.awt.Color(66, 63, 102));
-        JTFL_GananciaMenudeo.setSoloNumeros(true);
-        JTFL_GananciaMenudeo.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_GananciaMenudeoKeyReleased(evt);
-            }
-        });
+        JTFL_PrecioVenta.setForeground(new java.awt.Color(24, 23, 37));
+        JTFL_PrecioVenta.setColorMaterial(new java.awt.Color(66, 63, 102));
+        JTFL_PrecioVenta.setPlaceholder("Precio de venta");
+        JTFL_PrecioVenta.setSelectionColor(new java.awt.Color(66, 63, 102));
+        JTFL_PrecioVenta.setSoloNumeros(true);
 
-        rSLabelImage10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_Ganancias.png"))); // NOI18N
+        rSLabelImage13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_PrecioVenta.png"))); // NOI18N
 
-        rSLabelImage11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_Ganancias.png"))); // NOI18N
+        JDCH_FechaCaducidad.setBackground(new java.awt.Color(34, 41, 50));
+        JDCH_FechaCaducidad.setBgColor(new java.awt.Color(34, 41, 50));
+        JDCH_FechaCaducidad.setFormatDate("yyyy-MM-dd");
 
-        JTFL_GananciaMayoreo.setForeground(new java.awt.Color(24, 23, 37));
-        JTFL_GananciaMayoreo.setColorMaterial(new java.awt.Color(66, 63, 102));
-        JTFL_GananciaMayoreo.setPlaceholder("Ganancia Mayoreo");
-        JTFL_GananciaMayoreo.setSelectionColor(new java.awt.Color(66, 63, 102));
-        JTFL_GananciaMayoreo.setSoloNumeros(true);
-        JTFL_GananciaMayoreo.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_GananciaMayoreoKeyReleased(evt);
-            }
-        });
+        jLabel16.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(24, 23, 37));
+        jLabel16.setText("Fecha de Caducidad:");
 
-        JTFL_PrecioMenudeo.setForeground(new java.awt.Color(24, 23, 37));
-        JTFL_PrecioMenudeo.setColorMaterial(new java.awt.Color(66, 63, 102));
-        JTFL_PrecioMenudeo.setPlaceholder("Precio Menudeo");
-        JTFL_PrecioMenudeo.setSelectionColor(new java.awt.Color(66, 63, 102));
-        JTFL_PrecioMenudeo.setSoloNumeros(true);
-        JTFL_PrecioMenudeo.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                JTFL_PrecioMenudeoKeyReleased(evt);
-            }
-        });
+        rSLabelImage9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Usuarios/Icono_NombreUsuario.png"))); // NOI18N
 
-        rSLabelImage12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Almacen/Icono_PrecioVenta.png"))); // NOI18N
+        JTFL_Proveedor.setForeground(new java.awt.Color(24, 23, 37));
+        JTFL_Proveedor.setColorMaterial(new java.awt.Color(66, 63, 102));
+        JTFL_Proveedor.setPlaceholder("Proveedor");
+        JTFL_Proveedor.setSelectionColor(new java.awt.Color(66, 63, 102));
 
         javax.swing.GroupLayout JPNL_FondoLayout = new javax.swing.GroupLayout(JPNL_Fondo);
         JPNL_Fondo.setLayout(JPNL_FondoLayout);
         JPNL_FondoLayout.setHorizontalGroup(
             JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(JNPL_Encabezado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, JPNL_FondoLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(JBTN_Cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(JBTN_Registrar, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(22, 22, 22))
             .addGroup(JPNL_FondoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(JPNL_FondoLayout.createSequentialGroup()
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(rSLabelImage2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(rSLabelImage3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(JBTN_Cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(JTFL_CodigoBarras, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(JTFL_PrecioCompra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(JCBX_Categoria, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
-                            .addComponent(JTFL_Descripcion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(rSLabelImage4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(rSLabelImage5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, JPNL_FondoLayout.createSequentialGroup()
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(rSLabelImage10, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(rSLabelImage11, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(JTFL_GananciaMayoreo, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JTFL_GananciaMenudeo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(JBTN_Registrar, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(22, 22, 22))
                     .addGroup(JPNL_FondoLayout.createSequentialGroup()
-                        .addComponent(rSLabelImage12, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTFL_PrecioMenudeo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, JPNL_FondoLayout.createSequentialGroup()
-                            .addComponent(rSLabelImage9, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(JTFL_Ubicacion, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(JPNL_FondoLayout.createSequentialGroup()
-                            .addComponent(rSLabelImage8, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(JCBX_Unidades, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(JPNL_FondoLayout.createSequentialGroup()
-                            .addComponent(rSLabelImage7, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(JTFL_Existencias, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(JPNL_FondoLayout.createSequentialGroup()
-                        .addComponent(rSLabelImage6, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTFL_PrecioMayoreo, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(48, 48, 48))
+                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(JTFL_PrecioVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(JPNL_FondoLayout.createSequentialGroup()
+                                    .addComponent(rSLabelImage3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(JCBX_Categoria, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(JPNL_FondoLayout.createSequentialGroup()
+                                    .addGap(44, 44, 44)
+                                    .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(JTFL_Descripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
+                                        .addComponent(JTFL_PrecioCompra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(rSLabelImage4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(rSLabelImage5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(rSLabelImage13, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(53, 53, 53)
+                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(JPNL_FondoLayout.createSequentialGroup()
+                                .addComponent(rSLabelImage9, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JTFL_Proveedor, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE))
+                            .addGroup(JPNL_FondoLayout.createSequentialGroup()
+                                .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(rSLabelImage8, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(rSLabelImage7, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(JTFL_Existencias, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(JCBX_Unidades, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(JPNL_FondoLayout.createSequentialGroup()
+                                .addComponent(jLabel16)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(JDCH_FechaCaducidad, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         JPNL_FondoLayout.setVerticalGroup(
             JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(JPNL_FondoLayout.createSequentialGroup()
                 .addComponent(JNPL_Encabezado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(41, 41, 41)
+                .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(JCBX_Categoria, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rSLabelImage3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rSLabelImage7, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JTFL_Existencias, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(rSLabelImage4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JTFL_Descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JCBX_Unidades, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rSLabelImage8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(JPNL_FondoLayout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(JCBX_Categoria, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(rSLabelImage3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(rSLabelImage2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JTFL_CodigoBarras, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(rSLabelImage4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JTFL_Descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(14, 14, 14)
                         .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(rSLabelImage5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(JTFL_PrecioCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(rSLabelImage10, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JTFL_GananciaMenudeo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(rSLabelImage11, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JTFL_GananciaMayoreo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(rSLabelImage13, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(JTFL_PrecioVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(JPNL_FondoLayout.createSequentialGroup()
-                        .addGap(66, 66, 66)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(rSLabelImage12, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JTFL_PrecioMenudeo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(19, 19, 19)
+                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(JDCH_FechaCaducidad, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(rSLabelImage6, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JTFL_PrecioMayoreo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(rSLabelImage9, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JTFL_Ubicacion, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(rSLabelImage7, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(JTFL_Existencias, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(JCBX_Unidades, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(rSLabelImage8, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(JTFL_Proveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
                 .addGroup(JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(JBTN_Registrar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -542,94 +422,85 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
             if(Registrar){
                 DAOAlmacen metodos = new DAOAlmacenImpI();
                 try{
-                    if(!metodos.Existe_Producto(this.JTFL_CodigoBarras.getText())){
-                        if(this.JCBX_Unidades.getSelectedItem().toString().equals("Kg")
-                           ||this.JCBX_Unidades.getSelectedItem().toString().equals("Litros")
-                           ||this.JCBX_Unidades.getSelectedItem().toString().equals("Metros")){
+                    if(this.JCBX_Unidades.getSelectedItem().toString().equals("Kg")
+                       ||this.JCBX_Unidades.getSelectedItem().toString().equals("Litros")
+                       ||this.JCBX_Unidades.getSelectedItem().toString().equals("Mililitros")){
+                        
+                        SimpleDateFormat formateador = new SimpleDateFormat("YYYY-MM-dd");
+                        
+                        Almacen modelo = new Almacen();
+
+                        modelo.setDescripcion(this.JTFL_Descripcion.getText());
+                        modelo.setCategoria(this.JCBX_Categoria.getSelectedItem().toString());
+                        modelo.setPrecioCompra(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText()));
+                        modelo.setPrecioVenta(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioVenta.getText()));
+                        modelo.setExistencias(Verificaciones_Converciones.Convertir_Double(this.JTFL_Existencias.getText()));
+                        modelo.setUnidad_venta(this.JCBX_Unidades.getSelectedItem().toString());
+                        modelo.setFechaCaducidad(String.valueOf(formateador.format(this.JDCH_FechaCaducidad.getDate())));
+                        modelo.setProveedor(this.JTFL_Proveedor.getText());
+                        
+                        try{
+                            
+                            metodos.Registrar(modelo);
+
+                            Modo_Registrar();
+
+                            Alerta_Exito SA = new Alerta_Exito(new JFrame(), true);
+                            SA.JLBL_Mensaje1.setText("Producto registrado exitosamente");
+                            SA.JLBL_Mensaje2.setText("");
+                            SA.JLBL_Mensaje3.setText("");
+                            SA.setVisible(true);
+                        }catch(Exception ex){
+                            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                            EA.JLBL_Mensaje1.setText("Error a registrar el producto");
+                            EA.JLBL_Mensaje2.setText("en la base de datos");
+                            EA.JLBL_Mensaje3.setText("");
+                            EA.setVisible(true);
+                            System.out.println(ex.getMessage());
+                        }
+                    }else{
+                        if(Verificaciones_Converciones.Verificar_Entero(this.JTFL_Existencias.getText())){
+                            SimpleDateFormat formateador = new SimpleDateFormat("YYYY-MM-dd");
                             
                             Almacen modelo = new Almacen();
                             
-                            modelo.setCodigo(this.JTFL_CodigoBarras.getText());
-                            modelo.setCategoria(this.JCBX_Categoria.getSelectedItem().toString());
                             modelo.setDescripcion(this.JTFL_Descripcion.getText());
-                            modelo.setPrecio(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText()));
-                            modelo.setGanancia_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMenudeo.getText()));
-                            modelo.setGanancia_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMayoreo.getText()));
-                            modelo.setPrecio_venta_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMenudeo.getText()));
-                            modelo.setPrecio_venta_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMayoreo.getText()));
+                            modelo.setCategoria(this.JCBX_Categoria.getSelectedItem().toString());
+                            modelo.setPrecioCompra(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText()));
+                            modelo.setPrecioVenta(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioVenta.getText()));
                             modelo.setExistencias(Verificaciones_Converciones.Convertir_Double(this.JTFL_Existencias.getText()));
                             modelo.setUnidad_venta(this.JCBX_Unidades.getSelectedItem().toString());
-                            modelo.setUbicacion(this.JTFL_Ubicacion.getText());
-                            
+                            modelo.setFechaCaducidad(String.valueOf(formateador.format(this.JDCH_FechaCaducidad.getDate())));
+                            modelo.setProveedor(this.JTFL_Proveedor.getText());
+
                             try{
                                 metodos.Registrar(modelo);
-                                
+
                                 Modo_Registrar();
-                                
-                                SuccessAlert SA = new SuccessAlert(new JFrame(), true);
-                                SA.JLBL_Mensaje1.setText("Producto registrado exitosamente");
+
+                                Alerta_Exito SA = new Alerta_Exito(new JFrame(), true);
+                                SA.JLBL_Mensaje1.setText("Producto registrado exitosamente.");
                                 SA.JLBL_Mensaje2.setText("");
                                 SA.JLBL_Mensaje3.setText("");
                                 SA.setVisible(true);
                             }catch(Exception ex){
-                                ErrorAlert EA = new ErrorAlert(new JFrame(), true);
+                                Alerta_Error EA = new Alerta_Error(new JFrame(), true);
                                 EA.JLBL_Mensaje1.setText("Error a registrar el producto");
-                                EA.JLBL_Mensaje2.setText("en la base de datos");
+                                EA.JLBL_Mensaje2.setText("en la base de datos.");
                                 EA.JLBL_Mensaje3.setText("");
                                 EA.setVisible(true);
                                 System.out.println(ex.getMessage());
                             }
                         }else{
-                            if(Verificaciones_Converciones.Verificar_Entero(this.JTFL_Existencias.getText())){
-                                Almacen modelo = new Almacen();
-                            
-                                modelo.setCodigo(this.JTFL_CodigoBarras.getText());
-                                modelo.setCategoria(this.JCBX_Categoria.getSelectedItem().toString());
-                                modelo.setDescripcion(this.JTFL_Descripcion.getText());
-                                modelo.setPrecio(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText()));
-                                modelo.setGanancia_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMenudeo.getText()));
-                                modelo.setGanancia_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMayoreo.getText()));
-                                modelo.setPrecio_venta_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMenudeo.getText()));
-                                modelo.setPrecio_venta_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMayoreo.getText()));
-                                modelo.setExistencias(Verificaciones_Converciones.Convertir_Double(this.JTFL_Existencias.getText()));
-                                modelo.setUnidad_venta(this.JCBX_Unidades.getSelectedItem().toString());
-                                modelo.setUbicacion(this.JTFL_Ubicacion.getText());
-
-                                try{
-                                    metodos.Registrar(modelo);
-
-                                    Modo_Registrar();
-
-                                    SuccessAlert SA = new SuccessAlert(new JFrame(), true);
-                                    SA.JLBL_Mensaje1.setText("Producto registrado exitosamente.");
-                                    SA.JLBL_Mensaje2.setText("");
-                                    SA.JLBL_Mensaje3.setText("");
-                                    SA.setVisible(true);
-                                }catch(Exception ex){
-                                    ErrorAlert EA = new ErrorAlert(new JFrame(), true);
-                                    EA.JLBL_Mensaje1.setText("Error a registrar el producto");
-                                    EA.JLBL_Mensaje2.setText("en la base de datos.");
-                                    EA.JLBL_Mensaje3.setText("");
-                                    EA.setVisible(true);
-                                    System.out.println(ex.getMessage());
-                                }
-                            }else{
-                                ErrorAlert EA = new ErrorAlert(new JFrame(), true);
-                                EA.JLBL_Mensaje1.setText("Las existencias  en estas unidades");
-                                EA.JLBL_Mensaje2.setText("deben de ser un número entero.");
-                                EA.JLBL_Mensaje3.setText("");
-                                EA.setVisible(true);
-                            }
-                        } 
-                    }else{
-                        ErrorAlert EA = new ErrorAlert(new JFrame(), true);
-                        EA.JLBL_Mensaje1.setText("El código que intentas registrar");
-                        EA.JLBL_Mensaje2.setText("ya existe.");
-                        EA.JLBL_Mensaje3.setText("");
-                        EA.setVisible(true);
-                    }
+                            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                            EA.JLBL_Mensaje1.setText("Las existencias  en estas unidades");
+                            EA.JLBL_Mensaje2.setText("deben de ser un número entero.");
+                            EA.JLBL_Mensaje3.setText("");
+                            EA.setVisible(true);
+                        }
+                    } 
                 }catch(Exception ex){
-                    ErrorAlert EA = new ErrorAlert(new JFrame(), true);
+                    Alerta_Error EA = new Alerta_Error(new JFrame(), true);
                     EA.JLBL_Mensaje1.setText("Error al exgraer información");
                     EA.JLBL_Mensaje2.setText("de la base de datos");
                     EA.JLBL_Mensaje3.setText("");
@@ -638,31 +509,60 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
                 }
             }else{
                 DAOAlmacen metodos = new DAOAlmacenImpI();
+                
+                SimpleDateFormat formateador = new SimpleDateFormat("YYYY-MM-dd");
+                
                 Almacen modelo = new Almacen();
                 
                 try{
-                    if(modeloGeneral.getCodigo().equals(this.JTFL_CodigoBarras.getText())){
-                        if(this.JCBX_Unidades.getSelectedItem().toString().equals("Kg")
-                            ||this.JCBX_Unidades.getSelectedItem().toString().equals("Litros")
-                            ||this.JCBX_Unidades.getSelectedItem().toString().equals("Metros")){
+                    if(this.JCBX_Unidades.getSelectedItem().toString().equals("Kg")
+                        ||this.JCBX_Unidades.getSelectedItem().toString().equals("Litros")
+                        ||this.JCBX_Unidades.getSelectedItem().toString().equals("Mililitros")){
 
+                        modelo.setId(modeloGeneral.getId());
+                        modelo.setDescripcion(this.JTFL_Descripcion.getText());
+                        modelo.setCategoria(this.JCBX_Categoria.getSelectedItem().toString());
+                        modelo.setPrecioCompra(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText()));
+                        modelo.setPrecioVenta(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioVenta.getText()));
+                        modelo.setExistencias(Verificaciones_Converciones.Convertir_Double(this.JTFL_Existencias.getText()));
+                        modelo.setUnidad_venta(this.JCBX_Unidades.getSelectedItem().toString());
+                        modelo.setFechaCaducidad(String.valueOf(formateador.format(this.JDCH_FechaCaducidad.getDate())));
+                        modelo.setProveedor(this.JTFL_Proveedor.getText());
+
+                        try{
+                            metodos.Modificar(modelo);
+
+                            Alerta_Exito SA = new Alerta_Exito(new JFrame(), true);
+                            SA.JLBL_Mensaje1.setText("Producto modificado exitosamente");
+                            SA.JLBL_Mensaje2.setText("");
+                            SA.JLBL_Mensaje3.setText("");
+                            SA.setVisible(true);
+
+                            this.dispose();
+                        }catch(Exception ex){
+                            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                            EA.JLBL_Mensaje1.setText("Error a modificar el producto");
+                            EA.JLBL_Mensaje2.setText("en la base de datos");
+                            EA.JLBL_Mensaje3.setText("");
+                            EA.setVisible(true);
+                            System.out.println(ex.getMessage());
+                        }
+                    }else{
+                        if(Verificaciones_Converciones.Verificar_Entero(this.JTFL_Existencias.getText())){
                             modelo.setId(modeloGeneral.getId());
-                            modelo.setCodigo(this.JTFL_CodigoBarras.getText());
-                            modelo.setCategoria(this.JCBX_Categoria.getSelectedItem().toString());
                             modelo.setDescripcion(this.JTFL_Descripcion.getText());
-                            modelo.setPrecio(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText()));
-                            modelo.setGanancia_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMenudeo.getText()));
-                            modelo.setGanancia_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMayoreo.getText()));
-                            modelo.setPrecio_venta_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMenudeo.getText()));
-                            modelo.setPrecio_venta_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMayoreo.getText()));
+                            modelo.setCategoria(this.JCBX_Categoria.getSelectedItem().toString());
+                            modelo.setPrecioCompra(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText()));
+                            modelo.setPrecioVenta(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioVenta.getText()));
                             modelo.setExistencias(Verificaciones_Converciones.Convertir_Double(this.JTFL_Existencias.getText()));
                             modelo.setUnidad_venta(this.JCBX_Unidades.getSelectedItem().toString());
-                            modelo.setUbicacion(this.JTFL_Ubicacion.getText());
+                            modelo.setFechaCaducidad(String.valueOf(formateador.format(this.JDCH_FechaCaducidad.getDate())));
+                            modelo.setProveedor(this.JTFL_Proveedor.getText());
 
                             try{
                                 metodos.Modificar(modelo);
 
-                                SuccessAlert SA = new SuccessAlert(new JFrame(), true);
+                                Alerta_Exito SA = new Alerta_Exito(new JFrame(), true);
                                 SA.JLBL_Mensaje1.setText("Producto modificado exitosamente");
                                 SA.JLBL_Mensaje2.setText("");
                                 SA.JLBL_Mensaje3.setText("");
@@ -670,7 +570,7 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
 
                                 this.dispose();
                             }catch(Exception ex){
-                                ErrorAlert EA = new ErrorAlert(new JFrame(), true);
+                                Alerta_Error EA = new Alerta_Error(new JFrame(), true);
                                 EA.JLBL_Mensaje1.setText("Error a modificar el producto");
                                 EA.JLBL_Mensaje2.setText("en la base de datos");
                                 EA.JLBL_Mensaje3.setText("");
@@ -678,135 +578,16 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
                                 System.out.println(ex.getMessage());
                             }
                         }else{
-                            if(Verificaciones_Converciones.Verificar_Entero(this.JTFL_Existencias.getText())){
-                                modelo.setId(modeloGeneral.getId());
-                                modelo.setCodigo(this.JTFL_CodigoBarras.getText());
-                                modelo.setCategoria(this.JCBX_Categoria.getSelectedItem().toString());
-                                modelo.setDescripcion(this.JTFL_Descripcion.getText());
-                                modelo.setPrecio(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText()));
-                                modelo.setGanancia_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMenudeo.getText()));
-                                modelo.setGanancia_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMayoreo.getText()));
-                                modelo.setPrecio_venta_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMenudeo.getText()));
-                                modelo.setPrecio_venta_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMayoreo.getText()));
-                                modelo.setExistencias(Verificaciones_Converciones.Convertir_Double(this.JTFL_Existencias.getText()));
-                                modelo.setUnidad_venta(this.JCBX_Unidades.getSelectedItem().toString());
-                                modelo.setUbicacion(this.JTFL_Ubicacion.getText());
-
-                                try{
-                                    metodos.Modificar(modelo);
-
-                                    SuccessAlert SA = new SuccessAlert(new JFrame(), true);
-                                    SA.JLBL_Mensaje1.setText("Producto modificado exitosamente");
-                                    SA.JLBL_Mensaje2.setText("");
-                                    SA.JLBL_Mensaje3.setText("");
-                                    SA.setVisible(true);
-
-                                    this.dispose();
-                                }catch(Exception ex){
-                                    ErrorAlert EA = new ErrorAlert(new JFrame(), true);
-                                    EA.JLBL_Mensaje1.setText("Error a modificar el producto");
-                                    EA.JLBL_Mensaje2.setText("en la base de datos");
-                                    EA.JLBL_Mensaje3.setText("");
-                                    EA.setVisible(true);
-                                    System.out.println(ex.getMessage());
-                                }
-                            }else{
-                                ErrorAlert EA = new ErrorAlert(new JFrame(), true);
-                                EA.JLBL_Mensaje1.setText("Las existencias  en estas unidades");
-                                EA.JLBL_Mensaje2.setText("deben de ser un número entero");
-                                EA.JLBL_Mensaje3.setText("");
-                                EA.setVisible(true);
-                            }
-                        }
-                    }else{
-                        if(!metodos.Existe_Producto(this.JTFL_CodigoBarras.getText())){
-                            if(this.JCBX_Unidades.getSelectedItem().toString().equals("Kg")
-                                ||this.JCBX_Unidades.getSelectedItem().toString().equals("Litros")
-                                ||this.JCBX_Unidades.getSelectedItem().toString().equals("Metros")){
-
-                                modelo.setId(modeloGeneral.getId());
-                                modelo.setCodigo(this.JTFL_CodigoBarras.getText());
-                                modelo.setCategoria(this.JCBX_Categoria.getSelectedItem().toString());
-                                modelo.setDescripcion(this.JTFL_Descripcion.getText());
-                                modelo.setPrecio(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText()));
-                                modelo.setGanancia_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMenudeo.getText()));
-                                modelo.setGanancia_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMayoreo.getText()));
-                                modelo.setPrecio_venta_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMenudeo.getText()));
-                                modelo.setPrecio_venta_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMayoreo.getText()));
-                                modelo.setExistencias(Verificaciones_Converciones.Convertir_Double(this.JTFL_Existencias.getText()));
-                                modelo.setUnidad_venta(this.JCBX_Unidades.getSelectedItem().toString());
-                                modelo.setUbicacion(this.JTFL_Ubicacion.getText());
-
-                                try{
-                                    metodos.Modificar(modelo);
-
-                                    SuccessAlert SA = new SuccessAlert(new JFrame(), true);
-                                    SA.JLBL_Mensaje1.setText("Producto modificado exitosamente");
-                                    SA.JLBL_Mensaje2.setText("");
-                                    SA.JLBL_Mensaje3.setText("");
-                                    SA.setVisible(true);
-
-                                    this.dispose();
-                                }catch(Exception ex){
-                                    ErrorAlert EA = new ErrorAlert(new JFrame(), true);
-                                    EA.JLBL_Mensaje1.setText("Error a modificar el producto");
-                                    EA.JLBL_Mensaje2.setText("en la base de datos");
-                                    EA.JLBL_Mensaje3.setText("");
-                                    EA.setVisible(true);
-                                    System.out.println(ex.getMessage());
-                                }
-                            }else{
-                                if(Verificaciones_Converciones.Verificar_Entero(this.JTFL_Existencias.getText())){
-                                    modelo.setId(modeloGeneral.getId());
-                                    modelo.setCodigo(this.JTFL_CodigoBarras.getText());
-                                    modelo.setCategoria(this.JCBX_Categoria.getSelectedItem().toString());
-                                    modelo.setDescripcion(this.JTFL_Descripcion.getText());
-                                    modelo.setPrecio(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText()));
-                                    modelo.setGanancia_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMenudeo.getText()));
-                                    modelo.setGanancia_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMayoreo.getText()));
-                                    modelo.setPrecio_venta_menudeo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMenudeo.getText()));
-                                    modelo.setPrecio_venta_mayoreo(Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioMayoreo.getText()));
-                                    modelo.setExistencias(Verificaciones_Converciones.Convertir_Double(this.JTFL_Existencias.getText()));
-                                    modelo.setUnidad_venta(this.JCBX_Unidades.getSelectedItem().toString());
-                                    modelo.setUbicacion(this.JTFL_Ubicacion.getText());
-
-                                    try{
-                                        metodos.Modificar(modelo);
-
-                                        SuccessAlert SA = new SuccessAlert(new JFrame(), true);
-                                        SA.JLBL_Mensaje1.setText("Producto modificado exitosamente");
-                                        SA.JLBL_Mensaje2.setText("");
-                                        SA.JLBL_Mensaje3.setText("");
-                                        SA.setVisible(true);
-
-                                        this.dispose();
-                                    }catch(Exception ex){
-                                        ErrorAlert EA = new ErrorAlert(new JFrame(), true);
-                                        EA.JLBL_Mensaje1.setText("Error a modificar el producto");
-                                        EA.JLBL_Mensaje2.setText("en la base de datos");
-                                        EA.JLBL_Mensaje3.setText("");
-                                        EA.setVisible(true);
-                                        System.out.println(ex.getMessage());
-                                    }
-                                }else{
-                                    ErrorAlert EA = new ErrorAlert(new JFrame(), true);
-                                    EA.JLBL_Mensaje1.setText("Las existencias  en estas unidades");
-                                    EA.JLBL_Mensaje2.setText("deben de ser un número entero");
-                                    EA.JLBL_Mensaje3.setText("");
-                                    EA.setVisible(true);
-                                }
-                            }
-                        }else{
-                            ErrorAlert EA = new ErrorAlert(new JFrame(), true);
-                            EA.JLBL_Mensaje1.setText("El código ya se encuentra registrado.");
-                            EA.JLBL_Mensaje2.setText("");
+                            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                            EA.JLBL_Mensaje1.setText("Las existencias  en estas unidades");
+                            EA.JLBL_Mensaje2.setText("deben de ser un número entero");
                             EA.JLBL_Mensaje3.setText("");
                             EA.setVisible(true);
                         }
                     }
                 }catch(Exception ex){
-                    ErrorAlert EA = new ErrorAlert(new JFrame(), true);
-                    EA.JLBL_Mensaje1.setText("Error al extraer información de la.");
+                    Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                    EA.JLBL_Mensaje1.setText("Error al extraer información de la");
                     EA.JLBL_Mensaje2.setText("base de datos.");
                     EA.JLBL_Mensaje3.setText("");
                     EA.setVisible(true);
@@ -814,7 +595,7 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
                 }
             }
         }else{
-            ErrorAlert EA = new ErrorAlert(new JFrame(), true);
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
             EA.JLBL_Mensaje1.setText("Todos los campos son requeridos");
             EA.JLBL_Mensaje2.setText("");
             EA.JLBL_Mensaje3.setText("");
@@ -822,61 +603,13 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_JBTN_RegistrarActionPerformed
 
-    private void JTFL_UbicacionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_UbicacionKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTFL_UbicacionKeyReleased
-
-    private void JTFL_ExistenciasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_ExistenciasKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTFL_ExistenciasKeyReleased
-
     private void JBTN_CerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_CerrarActionPerformed
         this.dispose();
     }//GEN-LAST:event_JBTN_CerrarActionPerformed
 
-    private void JTFL_CodigoBarrasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_CodigoBarrasKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTFL_CodigoBarrasKeyReleased
-
-    private void JTFL_DescripcionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_DescripcionKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTFL_DescripcionKeyReleased
-
-    private void JTFL_PrecioCompraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_PrecioCompraKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTFL_PrecioCompraKeyReleased
-
-    private void JTFL_PrecioMayoreoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_PrecioMayoreoKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTFL_PrecioMayoreoKeyReleased
-
     private void JBTN_CancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_CancelarActionPerformed
         this.dispose();
     }//GEN-LAST:event_JBTN_CancelarActionPerformed
-
-    private void JTFL_GananciaMenudeoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_GananciaMenudeoKeyReleased
-        if(!this.JTFL_GananciaMenudeo.getText().isEmpty()){
-            double porcentajeGanancia = Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMenudeo.getText());
-            double precioCompra = Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText());
-            double ganancia = (precioCompra)*(porcentajeGanancia/100);
-
-            this.JTFL_PrecioMenudeo.setText(String.format("%.2f",precioCompra + ganancia));
-        }
-    }//GEN-LAST:event_JTFL_GananciaMenudeoKeyReleased
-
-    private void JTFL_GananciaMayoreoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_GananciaMayoreoKeyReleased
-        if(!this.JTFL_GananciaMayoreo.getText().isEmpty()){
-            double porcentajeGanancia = Verificaciones_Converciones.Convertir_Double(this.JTFL_GananciaMayoreo.getText());
-            double precioCompra = Verificaciones_Converciones.Convertir_Double(this.JTFL_PrecioCompra.getText());
-            double ganancia = (precioCompra)*(porcentajeGanancia/100);
-
-            this.JTFL_PrecioMayoreo.setText(String.format("%.2f",precioCompra + ganancia));
-        }
-    }//GEN-LAST:event_JTFL_GananciaMayoreoKeyReleased
-
-    private void JTFL_PrecioMenudeoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_JTFL_PrecioMenudeoKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JTFL_PrecioMenudeoKeyReleased
 
     /**
      * @param args the command line arguments
@@ -949,28 +682,22 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
     public static rojeru_san.RSButtonRiple JBTN_Registrar;
     private RSMaterialComponent.RSComboBoxMaterial JCBX_Categoria;
     private RSMaterialComponent.RSComboBoxMaterial JCBX_Unidades;
+    private newscomponents.RSDateChooser JDCH_FechaCaducidad;
     private javax.swing.JLabel JLBL_Titulo;
     private javax.swing.JPanel JNPL_Encabezado;
     private javax.swing.JPanel JPNL_Fondo;
     private rojeru_san.RSPanelShadow JPNL_Shadow;
-    private rojeru_san.rsfield.RSTextMaterial JTFL_CodigoBarras;
     private rojeru_san.rsfield.RSTextMaterial JTFL_Descripcion;
     private rojeru_san.rsfield.RSTextMaterial JTFL_Existencias;
-    private rojeru_san.rsfield.RSTextMaterial JTFL_GananciaMayoreo;
-    private rojeru_san.rsfield.RSTextMaterial JTFL_GananciaMenudeo;
     private rojeru_san.rsfield.RSTextMaterial JTFL_PrecioCompra;
-    private rojeru_san.rsfield.RSTextMaterial JTFL_PrecioMayoreo;
-    private rojeru_san.rsfield.RSTextMaterial JTFL_PrecioMenudeo;
-    private rojeru_san.rsfield.RSTextMaterial JTFL_Ubicacion;
+    private rojeru_san.rsfield.RSTextMaterial JTFL_PrecioVenta;
+    private rojeru_san.rsfield.RSTextMaterial JTFL_Proveedor;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
-    private rojerusan.RSLabelImage rSLabelImage10;
-    private rojerusan.RSLabelImage rSLabelImage11;
-    private rojerusan.RSLabelImage rSLabelImage12;
-    private rojerusan.RSLabelImage rSLabelImage2;
+    private rojerusan.RSLabelImage rSLabelImage13;
     private rojerusan.RSLabelImage rSLabelImage3;
     private rojerusan.RSLabelImage rSLabelImage4;
     private rojerusan.RSLabelImage rSLabelImage5;
-    private rojerusan.RSLabelImage rSLabelImage6;
     private rojerusan.RSLabelImage rSLabelImage7;
     private rojerusan.RSLabelImage rSLabelImage8;
     private rojerusan.RSLabelImage rSLabelImage9;
@@ -978,15 +705,12 @@ public class RegistrarEditar_Producto extends javax.swing.JDialog {
     
     private void Agregar_ToolTip() {
         JCBX_Categoria.setToolTipText(ToolTip.head + ToolTip.body + "Categoría del producto" + ToolTip.pie);
-        JTFL_CodigoBarras.setToolTipText(ToolTip.head + ToolTip.body + "Código de barras" + ToolTip.pie);
         JTFL_Descripcion.setToolTipText(ToolTip.head + ToolTip.body + "Nombre del producto" + ToolTip.pie);
         JTFL_PrecioCompra.setToolTipText(ToolTip.head + ToolTip.body + "Precio de compra" + ToolTip.pie);
-        JTFL_GananciaMenudeo.setToolTipText(ToolTip.head + ToolTip.body + "Porcentaje de ganancia en menudeo" + ToolTip.pie);
-        JTFL_GananciaMayoreo.setToolTipText(ToolTip.head + ToolTip.body + "Procentaje de ganancia en mayoreo" + ToolTip.pie);
-        JTFL_PrecioMenudeo.setToolTipText(ToolTip.head + ToolTip.body + "Precio de venta minorísta" + ToolTip.pie);
-        JTFL_PrecioMayoreo.setToolTipText(ToolTip.head + ToolTip.body + "Precio de venta mayorísta" + ToolTip.pie);
+        JTFL_PrecioVenta.setToolTipText(ToolTip.head + ToolTip.body + "Precio de venta" + ToolTip.pie);
         JTFL_Existencias.setToolTipText(ToolTip.head + ToolTip.body + "Cantidad en almacén" + ToolTip.pie);
         JCBX_Unidades.setToolTipText(ToolTip.head + ToolTip.body + "Como se vende el producto" + ToolTip.pie);
-        JTFL_Ubicacion.setToolTipText(ToolTip.head + ToolTip.body + "Lugar donde se ecnuentra el producto" + ToolTip.pie);
+        JDCH_FechaCaducidad.setToolTipText(ToolTip.head + ToolTip.body + "Fecha de caducidad del producto" + ToolTip.pie);
+        JTFL_Proveedor.setToolTipText(ToolTip.head + ToolTip.body + "Proveedor del producto" + ToolTip.pie);
     }
 }

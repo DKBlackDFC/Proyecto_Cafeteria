@@ -6,10 +6,10 @@
 package Almacen;
 
 
-import Alertas.ErrorAlert;
+import Alertas.Alerta_Error;
 import Base_De_Datos.Construcciones.Categorias;
 import Base_De_Datos.Implementaciones.DAOCategoriasImpI;
-import Base_De_Datos.Interfaces.DAOCategorias;
+import Base_De_Datos.interfaces.DAOCategorias;
 import Reportes.Reportes;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -30,7 +30,7 @@ import rojeru_san.complementos.RSUtilities;
  */
 public class Imprimir_Almacen extends javax.swing.JDialog {
 
-    private ErrorAlert EA = new ErrorAlert(new JFrame(),true);
+    private Alerta_Error EA = new Alerta_Error(new JFrame(),true);
     
     public Imprimir_Almacen(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -55,7 +55,7 @@ public class Imprimir_Almacen extends javax.swing.JDialog {
                     public void run() {
                         Reportes nuevoReporte = new Reportes();
                         try {
-                            nuevoReporte.Reporte_Invetario(JCBX_Categoria.getSelectedItem().toString());
+                            nuevoReporte.Reporte_Inventario(JCBX_Categoria.getSelectedItem().toString());
                             dispose();
                         } catch (Exception ex) {
                             EA.JLBL_Mensaje1.setText("Error al generar reporte");
@@ -188,7 +188,7 @@ public class Imprimir_Almacen extends javax.swing.JDialog {
         jLabel3.setFont(new java.awt.Font("Roboto", 1, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(93, 97, 92));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("¿Desea imprimir todo el inventario?");
+        jLabel3.setText("¿Desea exportar todo el inventario?");
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
         jLabel4.setFont(new java.awt.Font("Roboto", 2, 18)); // NOI18N
@@ -278,14 +278,14 @@ public class Imprimir_Almacen extends javax.swing.JDialog {
         JPNL_FondoLayout.setHorizontalGroup(
             JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(JNPL_Encabezado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(JPNL_Slider, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(JPNL_Slider, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         JPNL_FondoLayout.setVerticalGroup(
             JPNL_FondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(JPNL_FondoLayout.createSequentialGroup()
                 .addComponent(JNPL_Encabezado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(JPNL_Slider, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE))
+                .addComponent(JPNL_Slider, javax.swing.GroupLayout.PREFERRED_SIZE, 276, Short.MAX_VALUE))
         );
 
         JPNL_Shadow.add(JPNL_Fondo, java.awt.BorderLayout.CENTER);
@@ -315,7 +315,7 @@ public class Imprimir_Almacen extends javax.swing.JDialog {
                 public void run() {
                     Reportes nuevoReporte = new Reportes();
                     try {
-                        nuevoReporte.Reporte_Invetario(JCBX_Categoria.getSelectedItem().toString());
+                        nuevoReporte.Reporte_Inventario(JCBX_Categoria.getSelectedItem().toString());
                         dispose();
                     } catch (Exception ex) {
                         EA.JLBL_Mensaje1.setText("Error al generar reporte");

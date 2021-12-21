@@ -6,7 +6,6 @@
 package Base_De_Datos.interfaces;
 
 import Base_De_Datos.Construcciones.Categorias;
-import java.util.List;
 
 /**
  *
