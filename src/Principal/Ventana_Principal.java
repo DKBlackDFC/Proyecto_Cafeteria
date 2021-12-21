@@ -7,6 +7,8 @@ package Principal;
 
 import Alertas.Alerta_Advertencia;
 import Alertas.Alerta_Error;
+import Alertas.Alerta_Informacion;
+import Alertas_SC.Alertas;
 import Almacen.JPNL_AlmacenMaqueta;
 import Configuracion.JPNL_ConfiguracionMaqueta;
 import Usuarios.JPNL_CajerosMaqueta;
@@ -42,6 +44,23 @@ public class Ventana_Principal extends javax.swing.JFrame {
        
         this.JLBL_Panel.setText("V E N T A S".toUpperCase());
         this.JBTN_Ventas.setSelected(true);
+        
+        Alertas alertas = new Alertas();
+        
+        if(alertas.Alerta_Existencias()){
+            Alerta_Informacion EA = new Alerta_Informacion(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("Existen uno o más productos cerca de");
+            EA.JLBL_Mensaje2.setText("terminarse.");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+        }
+        if(alertas.Alerta_Caducidad()){
+            Alerta_Informacion EA = new Alerta_Informacion(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("Existen uno o más productos cerca de");
+            EA.JLBL_Mensaje2.setText("caducarse.");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+        }
     }
     
     private void Inicializar_Paneles(){
