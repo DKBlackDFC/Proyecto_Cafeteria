@@ -6,8 +6,11 @@
 package Reportes;
 
 import Base_De_Datos.Construcciones.Almacen;
+import Base_De_Datos.Construcciones.Ventas;
 import Base_De_Datos.Implementaciones.DAOAlmacenImpI;
+import Base_De_Datos.Implementaciones.DAOVentasImpI;
 import Base_De_Datos.interfaces.DAOAlmacen;
+import Base_De_Datos.interfaces.DAOVentas;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -32,6 +35,99 @@ import java.util.List;
  * @author DIEGO
  */
 public class Reportes {
+    public void Reporte_Ventas(String Fecha_1, String Fecha_2) throws Exception{
+        List<Ventas> datos = new ArrayList();
+        DAOVentas metodosVentas = new DAOVentasImpI(); 
+        
+        datos = metodosVentas.Listar_Rango(Fecha_1, Fecha_2);
+        
+        Document documento = new Document();
+            
+        String ruta = System.getProperty("user.home");
+        PdfWriter writer = PdfWriter.getInstance(documento, new FileOutputStream(ruta + "/Desktop/Reporte_Ventas.pdf"));
+        documento.open();
+        
+        Image img = Image.getInstance("C:/Users/DIEGO/Documents/NetBeansProjects/Proyecto_Cafeteria/Proyecto_Cafeteria/src/IMG/Login/Logo_ReportesV2.jpg");
+        img.setAlignment(Element.ALIGN_LEFT);
+        img.scaleToFit(150, 100);
+        documento.add(img);
+        
+        PdfContentByte pc = writer.getDirectContent();
+        BaseFont bf = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+        pc.setFontAndSize(bf, 30);
+        pc.beginText();
+            pc.setTextMatrix(200, 765);
+            pc.showText("PUNTO DE VENTA.");
+        pc.endText();
+        
+        Font negrita = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD, BaseColor.WHITE);
+        Font texto = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD, BaseColor.BLACK);
+        Font TySep = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL, BaseColor.BLACK);
+        
+        Paragraph separador = new Paragraph(10);
+        separador.setFont(TySep);
+        separador.add(Chunk.NEWLINE);
+        separador.add("__________________________________________________________________________");
+        separador.add(Chunk.NEWLINE);
+        separador.setAlignment(Element.ALIGN_CENTER);
+        documento.add(separador);
+        
+        Paragraph p = new Paragraph(10);
+        p.add(Chunk.NEWLINE);
+        p.setFont(texto);
+        p.add("Reporte de Ventas:");
+        p.add(Chunk.NEWLINE);
+        p.setIndentationLeft(40);
+        p.setAlignment(Element.ALIGN_LEFT);
+        documento.add(p);
+        
+        Paragraph separador2 = new Paragraph(10);
+        separador2.setFont(TySep);
+        separador2.add(Chunk.NEWLINE);
+        separador2.add("__________________________________________________________________________");
+        separador2.add(Chunk.NEWLINE);
+        separador2.add(Chunk.NEWLINE);
+        separador2.setAlignment(Element.ALIGN_CENTER);
+        documento.add(separador2);
+        
+        PdfPTable tabla = new PdfPTable(5);
+        tabla.setWidthPercentage(100);
+        PdfPCell c1 = new PdfPCell(new Phrase("NUM. VEN.", negrita));
+        PdfPCell c2 = new PdfPCell(new Phrase("PRODUCTO", negrita));
+        PdfPCell c3 = new PdfPCell(new Phrase("CANTIDAD", negrita));
+        PdfPCell c4 = new PdfPCell(new Phrase("PRE. VENTA", negrita));
+        PdfPCell c5 = new PdfPCell(new Phrase("TOTAL", negrita));
+
+        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+        c2.setHorizontalAlignment(Element.ALIGN_CENTER);
+        c3.setHorizontalAlignment(Element.ALIGN_CENTER);
+        c4.setHorizontalAlignment(Element.ALIGN_CENTER);
+        c5.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+        c1.setBackgroundColor(BaseColor.DARK_GRAY);
+        c2.setBackgroundColor(BaseColor.DARK_GRAY);
+        c3.setBackgroundColor(BaseColor.DARK_GRAY);
+        c4.setBackgroundColor(BaseColor.DARK_GRAY);
+        c5.setBackgroundColor(BaseColor.DARK_GRAY);
+        
+        tabla.addCell(c1);
+        tabla.addCell(c2);
+        tabla.addCell(c3);
+        tabla.addCell(c4);
+        tabla.addCell(c5);
+        
+        for(int i = 0;i < datos.size();i++){
+            tabla.addCell(datos.get(i).getNumero_venta());
+            tabla.addCell(datos.get(i).getProducto());
+            tabla.addCell(String.format("%.2f",datos.get(i).getCantidad()));
+            tabla.addCell(String.format("%.2f",datos.get(i).getPrecio()));
+            tabla.addCell(String.format("%.2f",datos.get(i).getTotal()));
+        }
+
+        documento.add(tabla);
+        
+        documento.close();
+    }
     public void Reporte_Inventario(String categoria) throws Exception{
         List<Almacen> datos = new ArrayList();
         DAOAlmacen metodosAlmacen = new DAOAlmacenImpI();
