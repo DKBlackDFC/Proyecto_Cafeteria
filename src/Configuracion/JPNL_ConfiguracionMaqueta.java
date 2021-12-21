@@ -5,6 +5,23 @@
  */
 package Configuracion;
 
+import Alertas.Alerta_Advertencia;
+import Alertas.Alerta_Cargando;
+import Alertas.Alerta_Error;
+import Alertas.Alerta_Exito;
+import Alertas.Alerta_Informacion;
+import Base_De_Datos.Metodos_Configuracion;
+import Principal.Ventana_Principal;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import necesario.RSFileChooser;
+
 /**
  *
  * @author DIEGO
@@ -14,8 +31,177 @@ public class JPNL_ConfiguracionMaqueta extends javax.swing.JPanel {
     public JPNL_ConfiguracionMaqueta() {
         initComponents();
         
+        Seleccionar_Impresora_Predeterminada();
+        Listar_Impresoras();
+    }
+    
+    private void Seleccionar_Impresora_Predeterminada() {
+        PrintService service = PrintServiceLookup.lookupDefaultPrintService();
+        if (service != null) {
+            String printServiceName = service.getName();
+            this.JCBX_SeleccionarImpresora.setSelectedItem(printServiceName);
+            this.JLBL_Impresora.setText(printServiceName);
+        } else {
+            JCBX_SeleccionarImpresora.setSelectedItem("NO SE HA ESTABLECIDO UNA IMPRESORA PREDETERMINADA");
+        }
     }
 
+    private void Listar_Impresoras() {
+        PrintService[] ps = PrintServiceLookup.lookupPrintServices(null, null);
+        for (PrintService p : ps) {
+            this.JCBX_SeleccionarImpresora.addItem(p.getName());
+        }
+    }
+    private void Establece_Impresora_Predeterminada(String printerName) {
+        System.out.println(printerName);
+        String cmdLine = String.format("RUNDLL32 PRINTUI.DLL,PrintUIEntry /y /n \"%s\"", printerName);
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", cmdLine);
+        builder.redirectErrorStream(true);
+        Process p = null;
+        try {
+            p = builder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        String line = new String();
+        while (true) {
+            try {
+                line = r.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (line == null) {
+                break;
+            }
+            System.out.println("result  " + line);
+        }
+    }
+    private void Crear_Respaldo_Base_De_Datos(){
+        RSFileChooser fileChooser = new RSFileChooser(); 
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos Mysql (*.slq)", "slq");
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setFileFilter(filter);
+        fileChooser.setDialogTitle("GUARDAR ARCHIVO");
+        Alerta_Cargando LA = new Alerta_Cargando(new JFrame(), true);
+        
+        if(fileChooser.showSaveDialog(this) == RSFileChooser.APPROVE_OPTION){
+
+            System.out.println(fileChooser.getSelectedFile().getAbsolutePath());
+
+            File archivo = new File(fileChooser.getSelectedFile().getAbsolutePath());
+            
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    LA.setVisible(true);
+                }
+            }).start();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+                        Metodos_Configuracion.Crear_Respaldo(archivo);
+                        LA.dispose();
+                        
+                        Alerta_Exito SA = new Alerta_Exito(new JFrame(), true);
+                        SA.JLBL_Mensaje1.setText("Información exportada exitosamente.");
+                        SA.JLBL_Mensaje2.setText("");
+                        SA.JLBL_Mensaje3.setText("");
+                        SA.setVisible(true);
+                    }catch(Exception ex){
+                        LA.dispose();
+                        
+                        Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                        EA.JLBL_Mensaje1.setText("No se pudo crear el archivo");
+                        EA.JLBL_Mensaje2.setText("de la base de datos.");
+                        EA.JLBL_Mensaje3.setText("");
+                        EA.setVisible(true);
+                        System.out.println(ex.getMessage());
+                    }
+                }
+                
+            }).start();
+        }
+    }
+    private void Restaurar_Base_De_Datos(){
+        RSFileChooser fileChooser = new RSFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos Mysql (*.sql)", "sql");
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setFileFilter(filter);
+        fileChooser.setDialogTitle("BUSCAR ARCHIVO");
+        Alerta_Cargando LA = new Alerta_Cargando(new JFrame(), true);
+        
+        if(fileChooser.showOpenDialog(this) == RSFileChooser.APPROVE_OPTION){
+
+            System.out.println(fileChooser.getSelectedFile().getAbsolutePath());
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    LA.setVisible(true);
+                }
+            }).start();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {  
+                    try{
+                        Metodos_Configuracion.Cargar_Respaldo(fileChooser.getSelectedFile().getAbsolutePath());
+                        LA.dispose();
+                        
+                        Alerta_Exito SA = new Alerta_Exito(new JFrame(), true);
+                        SA.JLBL_Mensaje1.setText("Información importada exitosamente.");
+                        SA.JLBL_Mensaje2.setText("Es necesario reiniciar la aplicación.");
+                        SA.JLBL_Mensaje3.setText("");
+                        SA.setVisible(true);
+                        
+                        System.exit(0);
+                    }catch(Exception ex){
+                        LA.dispose();
+                        
+                        Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                        EA.JLBL_Mensaje1.setText("No se pudo agregar la información");
+                        EA.JLBL_Mensaje2.setText("a la base de datos.");
+                        EA.JLBL_Mensaje3.setText("");
+                        EA.setVisible(true);
+                        System.out.println(ex.getMessage());
+                        ex.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+    }
+    private void Reiniciar_Base_De_Datos(){
+        Alerta_Advertencia WA = new Alerta_Advertencia(new JFrame(), true);
+        WA.JLBL_Mensaje1.setText("TODA la información de la base de datos");
+        WA.JLBL_Mensaje2.setText("se borrará, asegurese de tener su");
+        WA.JLBL_Mensaje3.setText("usuario por defecto para ingresar.");
+        WA.setVisible(true);
+        
+        if(WA.hecho){
+            try{
+                Metodos_Configuracion.Reiniciar_Base_De_Datos();
+                Alerta_Informacion IA = new Alerta_Informacion(new JFrame(), true);
+                IA.JLBL_Mensaje1.setText("Es necesario reiniciar el sistema.");
+                IA.JLBL_Mensaje2.setText("");
+                IA.JLBL_Mensaje3.setText("");
+                IA.setVisible(true);
+                
+                System.exit(0);
+            }catch(Exception ex){
+                Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                EA.JLBL_Mensaje1.setText("No se pudo eliminar la información,");
+                EA.JLBL_Mensaje2.setText("contácte al desarrollador.");
+                EA.JLBL_Mensaje3.setText("");
+                EA.setVisible(true);
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -40,11 +226,6 @@ public class JPNL_ConfiguracionMaqueta extends javax.swing.JPanel {
         lblTexto = new javax.swing.JLabel();
         JLBL_Impresora = new javax.swing.JLabel();
         JCBX_SeleccionarImpresora = new rojerusan.RSComboMetro();
-        jPanel9 = new javax.swing.JPanel();
-        jPanel10 = new javax.swing.JPanel();
-        JBTN_NotaVenta = new rojeru_san.rsbutton.RSButtonMetro();
-        jLabel58 = new javax.swing.JLabel();
-        jLabel59 = new javax.swing.JLabel();
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -237,11 +418,6 @@ public class JPNL_ConfiguracionMaqueta extends javax.swing.JPanel {
         JCBX_SeleccionarImpresora.setColorBorde(new java.awt.Color(34, 41, 50));
         JCBX_SeleccionarImpresora.setColorFondo(new java.awt.Color(34, 41, 50));
         JCBX_SeleccionarImpresora.setFont(new java.awt.Font("Roboto", 1, 16)); // NOI18N
-        JCBX_SeleccionarImpresora.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JCBX_SeleccionarImpresoraActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -273,69 +449,6 @@ public class JPNL_ConfiguracionMaqueta extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jPanel9.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)), "Personalización", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Roboto", 1, 14), new java.awt.Color(51, 51, 51))); // NOI18N
-
-        jPanel10.setBackground(new java.awt.Color(255, 255, 255));
-
-        JBTN_NotaVenta.setBackground(new java.awt.Color(34, 41, 50));
-        JBTN_NotaVenta.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Configuracion/Icono_Ticket.png"))); // NOI18N
-        JBTN_NotaVenta.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JBTN_NotaVentaActionPerformed(evt);
-            }
-        });
-
-        jLabel58.setFont(new java.awt.Font("Roboto", 1, 18)); // NOI18N
-        jLabel58.setForeground(new java.awt.Color(171, 179, 182));
-        jLabel58.setText("Nota de Venta");
-
-        jLabel59.setFont(new java.awt.Font("Roboto", 2, 14)); // NOI18N
-        jLabel59.setForeground(new java.awt.Color(171, 179, 182));
-        jLabel59.setText("Modificar nota de venta");
-
-        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
-        jPanel10.setLayout(jPanel10Layout);
-        jPanel10Layout.setHorizontalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(JBTN_NotaVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel58)
-                    .addComponent(jLabel59))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel10Layout.setVerticalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(JBTN_NotaVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(jPanel10Layout.createSequentialGroup()
-                        .addComponent(jLabel58)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel59)
-                        .addGap(0, 25, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
-        jPanel9.setLayout(jPanel9Layout);
-        jPanel9Layout.setHorizontalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel9Layout.createSequentialGroup()
-                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel9Layout.setVerticalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel9Layout.createSequentialGroup()
-                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -343,7 +456,6 @@ public class JPNL_ConfiguracionMaqueta extends javax.swing.JPanel {
             .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 899, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -353,9 +465,7 @@ public class JPNL_ConfiguracionMaqueta extends javax.swing.JPanel {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 154, Short.MAX_VALUE))
+                .addGap(0, 288, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -371,33 +481,56 @@ public class JPNL_ConfiguracionMaqueta extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void JBTN_RespaldoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_RespaldoActionPerformed
-        
+        if(Ventana_Principal.JLBL_AsignarTipo.getText().equals("ADMINISTRADOR")){
+            Crear_Respaldo_Base_De_Datos();
+        }else{
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("No cuentas con los permisos suficientes");
+            EA.JLBL_Mensaje3.setText("para realizar esta acción.");
+            EA.JLBL_Mensaje2.setText("");
+            EA.setVisible(true);
+        }
     }//GEN-LAST:event_JBTN_RespaldoActionPerformed
 
     private void JBTN_RestaurarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_RestaurarActionPerformed
-         
+        if(Ventana_Principal.JLBL_AsignarTipo.getText().equals("ADMINISTRADOR")){
+            Restaurar_Base_De_Datos();
+        }else{
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("No cuentas con los permisos suficientes");
+            EA.JLBL_Mensaje3.setText("para realizar esta acción.");
+            EA.JLBL_Mensaje2.setText("");
+            EA.setVisible(true);
+        } 
     }//GEN-LAST:event_JBTN_RestaurarActionPerformed
 
     private void JBTN_ReiniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_ReiniciarActionPerformed
-           
+        if(Ventana_Principal.JLBL_AsignarTipo.getText().equals("ADMINISTRADOR")){
+            Reiniciar_Base_De_Datos();
+        }else{
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("No cuentas con los permisos suficientes");
+            EA.JLBL_Mensaje3.setText("para realizar esta acción.");
+            EA.JLBL_Mensaje2.setText("");
+            EA.setVisible(true);
+        }
     }//GEN-LAST:event_JBTN_ReiniciarActionPerformed
 
     private void JBTN_EstablecerImpresoraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_EstablecerImpresoraActionPerformed
-        
+        if(!JCBX_SeleccionarImpresora.getSelectedItem().toString().equals("Seleccione una impresora")){
+            Establece_Impresora_Predeterminada(JCBX_SeleccionarImpresora.getSelectedItem().toString());
+            Seleccionar_Impresora_Predeterminada();
+        }else{
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("No ha seleccionado ninguna impresora.");
+            EA.JLBL_Mensaje3.setText("");
+            EA.JLBL_Mensaje2.setText("");
+        }
     }//GEN-LAST:event_JBTN_EstablecerImpresoraActionPerformed
-
-    private void JBTN_NotaVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_NotaVentaActionPerformed
-            
-    }//GEN-LAST:event_JBTN_NotaVentaActionPerformed
-
-    private void JCBX_SeleccionarImpresoraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JCBX_SeleccionarImpresoraActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_JCBX_SeleccionarImpresoraActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private rojeru_san.rsbutton.RSButtonRoundEffect JBTN_EstablecerImpresora;
-    private rojeru_san.rsbutton.RSButtonMetro JBTN_NotaVenta;
     private rojeru_san.rsbutton.RSButtonMetro JBTN_Reiniciar;
     private rojeru_san.rsbutton.RSButtonMetro JBTN_Respaldo;
     private rojeru_san.rsbutton.RSButtonMetro JBTN_Restaurar;
@@ -407,18 +540,14 @@ public class JPNL_ConfiguracionMaqueta extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel51;
     private javax.swing.JLabel jLabel52;
     private javax.swing.JLabel jLabel53;
-    private javax.swing.JLabel jLabel58;
-    private javax.swing.JLabel jLabel59;
     private javax.swing.JLabel jLabel60;
     private javax.swing.JLabel jLabel61;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblTexto;
     // End of variables declaration//GEN-END:variables
