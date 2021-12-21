@@ -18,11 +18,25 @@ import Base_De_Datos.interfaces.DAOVentas;
 import Principal.Ventana_Principal;
 import Reportes.Reportes;
 import Utilidades.Codigo;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -233,7 +247,165 @@ public class JPNL_CajaMaqueta extends javax.swing.JPanel {
     private void Realizar_Venta_Ticket(String pagoCon, String cambio, String cantidad, String total, String formaPago, String efectivo, String tarjeta){
         Realizar_Venta(formaPago, efectivo, tarjeta);
         
+        DAOVentas metodosVentas = new DAOVentasImpI();
+        Ventas modelo = new Ventas();
+        List<Ventas> datos = new ArrayList();
         
+        Document documento = new Document();    
+        String ruta = System.getProperty("user.home");
+        
+        try{
+            datos = metodosVentas.Listar(codigoVenta);
+            PdfWriter writer = PdfWriter.getInstance(documento, new FileOutputStream(ruta + "/Desktop/Nota.pdf"));
+            documento.open();
+
+            Image img = Image.getInstance("C:/Users/DIEGO/Documents/NetBeansProjects/Proyecto_Cafeteria/Proyecto_Cafeteria/src/IMG/Login/Logo_ReportesV2.jpg");
+            img.setAlignment(Element.ALIGN_LEFT);
+            img.scaleToFit(150, 100);
+            documento.add(img);
+
+            PdfContentByte pc = writer.getDirectContent();
+            BaseFont bf = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+            pc.setFontAndSize(bf, 30);
+            pc.beginText();
+                pc.setTextMatrix(200, 765);
+                pc.showText("PUNTO DE VENTA.");
+            pc.endText();
+
+            Font negrita = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD, BaseColor.WHITE);
+            Font texto = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD, BaseColor.BLACK);
+            Font TySep = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL, BaseColor.BLACK);
+
+            Paragraph separador = new Paragraph(10);
+            separador.setFont(TySep);
+            separador.add(Chunk.NEWLINE);
+            separador.add("__________________________________________________________________________");
+            separador.add(Chunk.NEWLINE);
+            separador.setAlignment(Element.ALIGN_CENTER);
+            documento.add(separador);
+
+            Paragraph p = new Paragraph(10);
+            p.add(Chunk.NEWLINE);
+            p.setFont(texto);
+            p.add("Folio de Venta: " + codigoVenta);
+            p.add(Chunk.NEWLINE);
+            p.setIndentationLeft(40);
+            p.setAlignment(Element.ALIGN_LEFT);
+            documento.add(p);
+            
+            Paragraph p2 = new Paragraph(10);
+            p2.add(Chunk.NEWLINE);
+            p2.setFont(texto);
+            p2.add("Sucursal: CAFETERÍA");
+            p2.add(Chunk.NEWLINE);
+            p2.setIndentationLeft(40);
+            p2.setAlignment(Element.ALIGN_LEFT);
+            documento.add(p2);
+            
+            Paragraph p3 = new Paragraph(10);
+            p3.add(Chunk.NEWLINE);
+            p3.setFont(texto);
+            p3.add("Cajero: " + Ventana_Principal.JLBL_AsignarNombre.getText());
+            p3.add(Chunk.NEWLINE);
+            p3.setIndentationLeft(40);
+            p3.setAlignment(Element.ALIGN_LEFT);
+            documento.add(p3);
+            
+            Paragraph p4 = new Paragraph(10);
+            p4.add(Chunk.NEWLINE);
+            p4.setFont(texto);
+            p4.add("Fecha: " + datos.get(0).getFecha());
+            p4.add(Chunk.NEWLINE);
+            p4.setIndentationLeft(40);
+            p4.setAlignment(Element.ALIGN_LEFT);
+            documento.add(p4);
+            
+            Paragraph separador2 = new Paragraph(10);
+            separador2.setFont(TySep);
+            separador2.add(Chunk.NEWLINE);
+            separador2.add("__________________________________________________________________________");
+            separador2.add(Chunk.NEWLINE);
+            separador2.add(Chunk.NEWLINE);
+            separador2.setAlignment(Element.ALIGN_CENTER);
+            documento.add(separador2);
+            
+            PdfPTable tabla = new PdfPTable(4);
+            tabla.setWidthPercentage(100);
+            PdfPCell c1 = new PdfPCell(new Phrase("PRODUCTO", negrita));
+            PdfPCell c2 = new PdfPCell(new Phrase("CANTIDAD", negrita));
+            PdfPCell c3 = new PdfPCell(new Phrase("PRECIO", negrita));
+            PdfPCell c4 = new PdfPCell(new Phrase("TOTAL", negrita));
+            
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c3.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c4.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+            c1.setBackgroundColor(BaseColor.DARK_GRAY);
+            c2.setBackgroundColor(BaseColor.DARK_GRAY);
+            c3.setBackgroundColor(BaseColor.DARK_GRAY);
+            c4.setBackgroundColor(BaseColor.DARK_GRAY);
+
+            tabla.addCell(c1);
+            tabla.addCell(c2);
+            tabla.addCell(c3);
+            tabla.addCell(c4);
+            
+            for(int i = 0;i < datos.size();i++){
+                tabla.addCell(String.valueOf(datos.get(i).getProducto()));
+                tabla.addCell(String.format("%.2f",datos.get(i).getCantidad()));
+                tabla.addCell(String.format("%.2f",datos.get(i).getPrecio()));
+                tabla.addCell(String.format("%.2f",datos.get(i).getTotal()));
+            }
+
+            documento.add(tabla);
+            
+            Paragraph separador3 = new Paragraph(10);
+            separador3.setFont(TySep);
+            separador3.add(Chunk.NEWLINE);
+            separador3.add("__________________________________________________________________________");
+            separador3.add(Chunk.NEWLINE);
+            separador3.add(Chunk.NEWLINE);
+            separador3.setAlignment(Element.ALIGN_CENTER);
+            documento.add(separador3);
+            
+            Paragraph p5 = new Paragraph(10);
+            p5.add(Chunk.NEWLINE);
+            p5.setFont(texto);
+            p5.add("TOTAL: $" + total);
+            p5.add(Chunk.NEWLINE);
+            p5.setIndentationLeft(40);
+            p5.setAlignment(Element.ALIGN_LEFT);
+            documento.add(p5);
+            
+            Paragraph p6 = new Paragraph(10);
+            p6.add(Chunk.NEWLINE);
+            p6.setFont(texto);
+            p6.add("PAGO CON: $" + pagoCon);
+            p6.add(Chunk.NEWLINE);
+            p6.setIndentationLeft(40);
+            p6.setAlignment(Element.ALIGN_LEFT);
+            documento.add(p6);
+            
+            Paragraph p7 = new Paragraph(10);
+            p7.add(Chunk.NEWLINE);
+            p7.setFont(texto);
+            p7.add("CAMBIO: " + cambio);
+            p7.add(Chunk.NEWLINE);
+            p7.setIndentationLeft(40);
+            p7.setAlignment(Element.ALIGN_LEFT);
+            documento.add(p7);
+            
+            documento.close();
+            
+        }catch(Exception ex){
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("Error al generar NOTA");
+            EA.JLBL_Mensaje2.setText("");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+            System.out.println(ex.getMessage());
+        }
     }
     private void Limpiar_Tabla(){
         DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
@@ -708,7 +880,66 @@ public class JPNL_CajaMaqueta extends javax.swing.JPanel {
     }//GEN-LAST:event_JTBL_VentasMouseClicked
 
     private void JBTN_EditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_EditarActionPerformed
+        int filaSeleccionada = this.JTBL_Ventas.getSelectedRow();
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.JTBL_Ventas.getModel();
+        double cantidad = Double.parseDouble(modeloTabla.getValueAt(filaSeleccionada, 2).toString());
         
+        this.JPOP_MenuTabla.setVisible(false);
+        
+        Especificar_Cantidad EC = new Especificar_Cantidad(new JFrame(), true);
+        EC.setVisible(true);
+        
+        if(EC.continuar){ 
+            DAOAlmacen metodosAlmacen = new DAOAlmacenImpI();
+            Almacen modeloAlmacen = new Almacen();
+            
+            try{
+                modeloAlmacen = metodosAlmacen.Extraer_Datos(modeloTabla.getValueAt(filaSeleccionada,0).toString());
+                
+                if(Unidad_Venta(modeloAlmacen.getUnidad_venta())){
+                    cantidad = EC.cantidad;
+                    if((modeloAlmacen.getExistencias()-cantidad) >= 0){
+                        modeloTabla.setValueAt(String.format("%.2f", cantidad), filaSeleccionada, 2);
+                        modeloTabla.setValueAt(String.format("%.2f", Calcular_Importe(filaSeleccionada)), filaSeleccionada, 4);
+                        Calcular_Total();
+                    }else{
+                        Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                        EA.JLBL_Mensaje1.setText("Existencias insuficientes.");
+                        EA.JLBL_Mensaje2.setText("");
+                        EA.JLBL_Mensaje3.setText("");
+                        EA.setVisible(true);
+                    }
+                }else{
+                    cantidad = EC.cantidad;
+                    if(EC.entero){
+                        if((modeloAlmacen.getExistencias()-cantidad) >= 0){
+                            modeloTabla.setValueAt(String.format("%.0f", cantidad), filaSeleccionada, 2);
+                            modeloTabla.setValueAt(String.format("%.2f", Calcular_Importe(filaSeleccionada)), filaSeleccionada, 4);
+                            Calcular_Total();
+                        }else{
+                            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                            EA.JLBL_Mensaje1.setText("Existencias insuficientes.");
+                            EA.JLBL_Mensaje2.setText("");
+                            EA.JLBL_Mensaje3.setText("");
+                            EA.setVisible(true);
+                        }
+                    }else{
+                        Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                        EA.JLBL_Mensaje1.setText("La cantidad especificada no es válida");
+                        EA.JLBL_Mensaje2.setText("para la unidad de venta del producto.");
+                        EA.JLBL_Mensaje3.setText("");
+                        EA.setVisible(true);
+                    }
+                }
+            }catch(Exception ex){
+                Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                EA.JLBL_Mensaje1.setText("Error al extrar información de");
+                EA.JLBL_Mensaje2.setText("la base de datos.");
+                EA.JLBL_Mensaje3.setText("");
+                EA.setVisible(true);
+                System.out.println(ex.getMessage());
+            }
+        }
     }//GEN-LAST:event_JBTN_EditarActionPerformed
  
     // Variables declaration - do not modify//GEN-BEGIN:variables

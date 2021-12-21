@@ -5,6 +5,8 @@
  */
 package Ventas;
 
+import Alertas.Alerta_Error;
+import Principal.Ventana_Principal;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
@@ -20,19 +22,84 @@ import javax.swing.KeyStroke;
 public class JPNL_VentasMaqueta extends javax.swing.JPanel {
     
     private JPNL_CajaMaqueta JPNL_Caja;
+    private JPNL_UltimasVentasMaqueta JPNL_UltimasVentas;
     
     public JPNL_VentasMaqueta() {
         initComponents();
         
+        addEventKey();
         Inicializar_Paneles();
     }
     
     private void Inicializar_Paneles(){
         JPNL_Caja = new JPNL_CajaMaqueta();
+        JPNL_UltimasVentas = new JPNL_UltimasVentasMaqueta();
         
         JPNL_Caja.setName("JPNL_CajaMaqueta");
+        JPNL_UltimasVentas.setName("JPNL_UltimasVentasMaqueta");
         
         JPNL_Slider.add(JPNL_Caja);
+        JPNL_Slider.add(JPNL_UltimasVentas);
+    }
+    
+    private void addEventKey() {
+        //--------------------------------------------------------------------------------
+        KeyStroke f5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false);
+        Action f5Action = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if(!JBTN_Ventas.isSelected()){
+                    JBTN_Ventas.setSelected(true);
+                    JBTN_Reportes.setSelected(false);
+                    JBTN_UltimasVentas.setSelected(false);
+
+                    JPNL_Slider.slidPanel(4, JPNL_Caja, rojerusan.RSPanelsSlider.direct.Right);
+                }
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f5, "F5");
+        this.getActionMap().put("F5", f5Action);
+
+        //--------------------------------------------------------------------------------
+        KeyStroke f6 = KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false);
+        Action f6Action = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if(!Ventana_Principal.JLBL_AsignarTipo.getText().equals("ESTANDAR")){
+                    new Imprimir_Ventas(new JFrame(),true).setVisible(true);
+                }else{
+                    Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                    EA.JLBL_Mensaje1.setText("No cuentas con los permisos suficientes");
+                    EA.JLBL_Mensaje2.setText("para acceder a éste apartado.");
+                    EA.JLBL_Mensaje3.setText("");
+                    EA.setVisible(true);
+                }
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f6, "F6");
+        this.getActionMap().put("F6", f6Action);
+
+        //--------------------------------------------------------------------------------
+        KeyStroke f7 = KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false);
+        Action f7Action = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if(!Ventana_Principal.JLBL_AsignarTipo.getText().equals("ESTANDAR")){
+                    if(!JBTN_UltimasVentas.isSelected()){
+                        JBTN_Ventas.setSelected(false);
+                        JBTN_Reportes.setSelected(false);
+                        JBTN_UltimasVentas.setSelected(true);
+
+                        JPNL_Slider.slidPanel(4, JPNL_UltimasVentas, rojerusan.RSPanelsSlider.direct.Right);
+                    }
+                }else{
+                    Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+                    EA.JLBL_Mensaje1.setText("No cuentas con los permisos suficientes");
+                    EA.JLBL_Mensaje2.setText("para acceder a éste apartado.");
+                    EA.JLBL_Mensaje3.setText("");
+                    EA.setVisible(true);
+                }
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f7, "F7");
+        this.getActionMap().put("F7", f7Action);
     }
     
     @SuppressWarnings("unchecked")
@@ -155,15 +222,35 @@ public class JPNL_VentasMaqueta extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void JBTN_ReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_ReportesActionPerformed
-        
+        new Imprimir_Ventas(new JFrame(),true).setVisible(true);
     }//GEN-LAST:event_JBTN_ReportesActionPerformed
 
     private void JBTN_UltimasVentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_UltimasVentasActionPerformed
-        
+        if(!Ventana_Principal.JLBL_AsignarTipo.getText().equals("ESTANDAR")){
+            if(!this.JBTN_UltimasVentas.isSelected()){
+                this.JBTN_Ventas.setSelected(false);
+                this.JBTN_Reportes.setSelected(false);
+                this.JBTN_UltimasVentas.setSelected(true);
+
+                this.JPNL_Slider.slidPanel(4, JPNL_UltimasVentas, rojerusan.RSPanelsSlider.direct.Right);
+            }
+        }else{
+            Alerta_Error EA = new Alerta_Error(new JFrame(), true);
+            EA.JLBL_Mensaje1.setText("No cuentas con los permisos suficientes");
+            EA.JLBL_Mensaje2.setText("para acceder a éste apartado.");
+            EA.JLBL_Mensaje3.setText("");
+            EA.setVisible(true);
+        }
     }//GEN-LAST:event_JBTN_UltimasVentasActionPerformed
 
     private void JBTN_VentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBTN_VentasActionPerformed
-        
+        if(!this.JBTN_Ventas.isSelected()){
+            this.JBTN_Ventas.setSelected(true);
+            this.JBTN_Reportes.setSelected(false);
+            this.JBTN_UltimasVentas.setSelected(false);
+            
+            this.JPNL_Slider.slidPanel(4, JPNL_Caja, rojerusan.RSPanelsSlider.direct.Right);
+        }
     }//GEN-LAST:event_JBTN_VentasActionPerformed
 
 

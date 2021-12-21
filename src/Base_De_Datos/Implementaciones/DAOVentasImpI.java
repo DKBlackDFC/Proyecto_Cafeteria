@@ -30,13 +30,13 @@ public class DAOVentasImpI extends Conexion implements DAOVentas {
             
             PreparedStatement ps = this.conexion.prepareStatement(SQL);
             ps.setString(1, venta.getNumero_venta());
-            ps.setString(3, venta.getProducto());
-            ps.setDouble(4, venta.getCantidad());
-            ps.setDouble(5, venta.getPrecio());
-            ps.setDouble(6, venta.getTotal());
-            ps.setString(8, venta.getCajero());
-            ps.setDate(9, Date.valueOf(venta.getFecha()));
-            ps.setString(10, venta.getForma_pago());
+            ps.setString(2, venta.getProducto());
+            ps.setDouble(3, venta.getCantidad());
+            ps.setDouble(4, venta.getPrecio());
+            ps.setDouble(5, venta.getTotal());
+            ps.setString(6, venta.getCajero());
+            ps.setDate(7, Date.valueOf(venta.getFecha()));
+            ps.setString(8, venta.getForma_pago());
 
             ps.executeUpdate();
             
